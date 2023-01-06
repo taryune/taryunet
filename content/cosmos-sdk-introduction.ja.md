@@ -4,10 +4,17 @@ date = 2023-01-01
 [taxonomies]
 tags = ["CosmosSDK", "IgniteCLI"]
 +++
-
+## TL;DR
 この記事では以下について解説します。
 - Cosmos SDKの概要
+  - Application-specific Blockchain
+  - Inter-blockchain Communication Protocol
 - Ignite CLIを用いた基本的な開発フロー
+  - Ignite CLIのインストール
+  - Store Objectの定義
+  - Messageの作成
+  - Error Handling
+  - Event Handling
 <!-- more -->
 ## Cosmos SDK Overview
 Cosmos SDKは、Proof-of-Stake(PoS)やProof-of-Authority(PoA)のブロックチェーンを開発するためのオープンソースフレームワークで、あるアプリケーションに特化したApplication-specific Blockchainを開発するこができます。  
@@ -86,37 +93,37 @@ ignite scaffold chain blog
 各フォルダの解説については[こちら](https://docs.cosmos.network/v0.47/building-modules/structure)にあります。
 主に編集するディレクトリは`proto/`と`x/`になります
 ```console
-blog
-|+ .git/
-|+ .github/
-|+ app/
-|+ cmd/
-|+ docs/
-|- proto/
- |- blog/
-  |- blog/
-   |  genesis.proto
-   |  params.proto
-   |  query.proto
-   |  tx.proto
-|+ testutil/
-|+ ts-client/
-|+ vue/
-|- x/
- |- blog/
-  |+ client/
-  |+ keeper/
-  |+ simulation/
-  |+ types/
-  |  genesis.go
-  |  genesis_test.go
-  |  module.go
-  |  module_simulation.go
-|  .gitignore
-|  config.yml
-|  go.mod
-|  go.sum
-|  readme.md
+blog
+|+ .git/
+|+ .github/
+|+ app/
+|+ cmd/
+|+ docs/
+|- proto/
+ |- blog/
+  |- blog/
+   |  genesis.proto
+   |  params.proto
+   |  query.proto
+   |  tx.proto
+|+ testutil/
+|+ ts-client/
+|+ vue/
+|- x/
+ |- blog/
+  |+ client/
+  |+ keeper/
+  |+ simulation/
+  |+ types/
+  |  genesis.go
+  |  genesis_test.go
+  |  module.go
+  |  module_simulation.go
+|  .gitignore
+|  config.yml
+|  go.mod
+|  go.sum
+|  readme.md
 ```
 
 ### Create Stores
@@ -144,6 +151,9 @@ message GenesisState {
   repeated StoredPost storedPostList = 3 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }
+```
+```console
+ignite generate proto-go
 ```
 - [x/blog/types/genesis.go](https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/458c3a2192ffeb724b7ab5df3caf362d7c7a7428/x/blog/types/genesis.go)
 ```go, hl_lines=2-5
