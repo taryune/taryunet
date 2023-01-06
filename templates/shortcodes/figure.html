@@ -1,0 +1,24 @@
+{% if src %}
+  <figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}" >
+    <img src="{{ src | safe }}"{% if alt %} alt="{{ alt }}"{% endif %}{% if style %} style="{{ style }}"{% endif %} />
+    {% if caption %}
+      <figcaption class="
+        {% if caption_position %}
+          {{ caption_position }}
+        {% else -%}
+          center
+        {%- endif %}"
+        {% if caption_style %}
+          style="{{ caption_style | safe }}"
+        {% else %}
+          style="font-style: italic;"
+        {% endif %}>
+        {% if caption_link %}
+          <a rel=""href="{{ caption_link }}" target="_blink">
+            {{ caption }}
+          </a>
+        {% endif %}
+      </figcaption>
+    {% endif %}
+  </figure>
+{% endif %}
