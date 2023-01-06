@@ -409,29 +409,6 @@ p {
   transform: translateX(50%)
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.75rem 0;
-  color: #778087
-}
-
-table td, table th {
-  vertical-align: top;
-  border: 1px solid #28282B;
-  line-height: 15px;
-  padding: 10px
-}
-
-table thead th {
-  font-size: 10px
-}
-
-table tbody td:first-child {
-  font-weight: 700;
-  color: #333
-}
-
 .form {
   width: 30rem
 }
@@ -880,7 +857,6 @@ select.form-control {
 }
 
 .dark pre code {
-  color: #fff
 }
 
 .dark h1 a, .dark h2 a, .dark h3 a, .dark h4 a, .dark h5 a {
@@ -888,24 +864,12 @@ select.form-control {
 }
 
 .dark code, .dark strong {
-  color: #0f1419;
 }
 
 .dark code {
   font-weight: 100
 }
 
-.dark table {
-  color: #28282B
-}
-
-.dark table td, .dark table th {
-  border-color: #444
-}
-
-.dark table tbody td:first-child {
-  color: #fff
-}
 
 .dark .form-group label {
   color: #28282B;
@@ -987,7 +951,7 @@ select.form-control {
 }
 
 .dark .menu .menu-item {
-  color: #28282B;
+  color: #light28282B;
   border-color: rgba(95, 95, 95, .78)
 }
 
@@ -997,9 +961,34 @@ select.form-control {
 }
 
 .dark p code {
-  color: #000;
   background-color: #215aa012;
   padding: .1em .4em;
   margin-left: 0.1e;
   margin-right: 0.1em;
+}
+
+pre {
+  padding: 1rem;
+  overflow: auto;
+  padding: 1rem 0;
+}
+// The line numbers already provide some kind of left/right padding
+pre[data-linenos] {
+  padding: 1rem 0;
+}
+pre table td mark {
+  padding: 0 .4em;
+}
+// The line number cells
+pre table td:nth-of-type(1) {
+  text-align: center;
+  user-select: none;
+}
+pre mark {
+  // If you want your highlights to take the full width.
+  display: block;
+}
+pre table {
+  width: 100%;
+  border-collapse: collapse
 }

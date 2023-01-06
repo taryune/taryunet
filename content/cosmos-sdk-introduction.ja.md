@@ -24,12 +24,15 @@ IBCは、2つのブロックチェーン間でPermissionlessに認証とデー�
 例えば[ICS-20](https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md)では、ERC-20のようなFungible Token Transferが定義されています。
 Cosmos SDKを用いればIBCの実装も容易に可能です。
 
+
+### Architecture
 次にApplication-specific Blockchainのアーキテクチャについて述べます。  
 アーキテクチャーはモジュラーに設計されており、以下のような構成になります。  
 
-![](https://tutorials.cosmos.network/resized-images/600/academy/2-cosmos-concepts/images/architecture_overview.png)  
-Reference: [Cosmos SDK Developer Portal](https://tutorials.cosmos.network/academy/2-cosmos-concepts/1-architecture.html)
-
+{{ figure(src="https://tutorials.cosmos.network/resized-images/600/academy/2-cosmos-concepts/images/architecture_overview.png",
+          style="width: 100%;",
+          caption="Reference: Cosmos SDK Developer Portal - Introduction to Cosmos",
+          caption_link="https://tutorials.cosmos.network/academy/2-cosmos-concepts/1-architecture.html") }}
 
 - [Terndermint Core](https://tendermint.com/core/)  
 Nodeのネットワーキング機能の担うNetworkking LayerとそのNodeの合意形成(PoS)のを担うConsensus Layerを担います。
@@ -46,87 +49,161 @@ Application LayerとコミュニケーションするためのInterfaceを定義
 Application Layerを担います。
 多数の[Module](https://docs.cosmos.network/main/modules)が提供されており、それらを用いて独自のアプリケーションを開発することができます。
 
+## Building the Blockchain
+[Ignite CLI](https://ignite.com/)を使って環境を作ってい行きます。
+Ignite CLIはCosmos SDKを用いたBlockchainの開発環境です。
+コマンド1つでBlockchainをScaffoldingできたり、Local環境での実行を行えたりします。
 
+Blogを作成するシンプルなチュートリアルとなっています。
+記事作成時点でのIgnite CLIのVersionは`0.25.2`です。  
+完成版のRepositoryはこちら: 
+[GitHub](https://github.com/taryune/cosmos-sdk-tutorial-blog)
 
-
-
+### Install Ignite CLI
+まずIginite CLIをインストールします。
+```console
+curl https://get.ignite.com/cli! | bash
 ```
-proto
-└── {project_name}
-    └── {module_name}
-        └── {proto_version}
-            ├── {module_name}.proto
-            ├── event.proto
-            ├── genesis.proto
-            ├── query.proto
-            └── tx.proto
-```
-
-```
-x/{module_name}
-├── client
-│   ├── cli
-│   │   ├── query.go
-│   │   └── tx.go
-│   └── testutil
-│       ├── cli_test.go
-│       └── suite.go
-├── exported
-│   └── exported.go
-├── keeper
-│   ├── genesis.go
-│   ├── grpc_query.go
-│   ├── hooks.go
-│   ├── invariants.go
-│   ├── keeper.go
-│   ├── keys.go
-│   ├── msg_server.go
-│   └── querier.go
-├── module
-│   └── module.go
-├── simulation
-│   ├── decoder.go
-│   ├── genesis.go
-│   ├── operations.go
-│   └── params.go
-├── spec
-│   ├── 01_concepts.md
-│   ├── 02_state.md
-│   ├── 03_messages.md
-│   └── 04_events.md
-├── {module_name}.pb.go
-├── abci.go
-├── codec.go
-├── errors.go
-├── events.go
-├── events.pb.go
-├── expected_keepers.go
-├── genesis.go
-├── genesis.pb.go
-├── keys.go
-├── msgs.go
-├── params.go
-├── query.pb.go
-└── tx.pb.go
+MacOSXの場合は別途Permissionが必要なため以下の手順でインストールします。
+```console
+sudo curl https://get.ignite.com/cli! | sudo bash
 ```
 
-[Cosmos SDK Document - Recommended Folder Structure](https://docs.cosmos.network/main/building-modules/structure)
-
-core concepts
-- Accounts
-
-
-
-## Ignite CLI
-Based on 
-https://docs.ignite.com/guide/blog
-
-- Scaffolding Chain
-- Query
-- Message
-- Event
+記事作成時点でのIgnite CLIのVersionは`0.25.2`です。  
+Versionを指定したい場合、以下のように指定することができます。
+```console
+curl https://get.ignite.com/cli@v0.25.2! | bash
+```
 
 
+### Create your blog chain
+`blog`というChainをScaffoldingしていきます。  
+`ignite scaffold`についてのドキュメントは[こちら](https://docs.ignite.com/cli#ignite-scaffold)
+```console
+ignite scaffold chain blog
+```
+すると`blog/`に以下のようなストラクチャのファイルが作成されます。  
+各フォルダの解説については[こちら](https://docs.cosmos.network/v0.47/building-modules/structure)にあります。
+主に編集するディレクトリは`proto/`と`x/`になります
+```console
+blog
+|+ .git/
+|+ .github/
+|+ app/
+|+ cmd/
+|+ docs/
+|- proto/
+ |- blog/
+  |- blog/
+   |  genesis.proto
+   |  params.proto
+   |  query.proto
+   |  tx.proto
+|+ testutil/
+|+ ts-client/
+|+ vue/
+|- x/
+ |- blog/
+  |+ client/
+  |+ keeper/
+  |+ simulation/
+  |+ types/
+  |  genesis.go
+  |  genesis_test.go
+  |  module.go
+  |  module_simulation.go
+|  .gitignore
+|  config.yml
+|  go.mod
+|  go.sum
+|  readme.md
+```
+
+### Create Stores
+
+```console
+ignite scaffold single postCount count:uint \
+    --module blog \
+    --no-message
+```
+
+```console
+ignite scaffold map storedPost title body \
+  --index index \
+  --module blog  \
+  --no-message
+```
+
+[diff](https://github.com/taryune/cosmos-sdk-tutorial-blog/commit/458c3a2192ffeb724b7ab5df3caf362d7c7a7428?diff=split)
+- [proto/blog/blog/genesis.proto](https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/458c3a2192ffeb724b7ab5df3caf362d7c7a7428/proto/blog/blog/genesis.proto)
+```proto,  hl_lines=4
+// GenesisState defines the blog module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  PostCount postCount = 2 [(gogoproto.nullable) = false];
+  repeated StoredPost storedPostList = 3 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}
+```
+- [x/blog/types/genesis.go](https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/458c3a2192ffeb724b7ab5df3caf362d7c7a7428/x/blog/types/genesis.go)
+```go, hl_lines=2-5
+func DefaultGenesis() *GenesisState {
+	return &GenesisState{
+		PostCount: PostCount{
+			Count: uint64(0),
+		},
+		StoredPostList: []StoredPost{},
+		// this line is used by starport scaffolding # genesis/types/default
+		Params: DefaultParams(),
+	}
+}
+```
+
+
+- [x/blog/genesis.go](https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/458c3a2192ffeb724b7ab5df3caf362d7c7a7428/x/blog/genesis.go)
+```go, hl_lines=3 20
+// InitGenesis initializes the module's state from a provided genesis state.
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+	k.SetPostCount(ctx, genState.PostCount)
+	// Set all the storedPost
+	for _, elem := range genState.StoredPostList {
+		k.SetStoredPost(ctx, elem)
+	}
+	// this line is used by starport scaffolding # genesis/module/init
+	k.SetParams(ctx, genState.Params)
+}
+```
+```go, hl_lines=9
+// ExportGenesis returns the module's exported genesis
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
+	genesis := types.DefaultGenesis()
+	genesis.Params = k.GetParams(ctx)
+
+	// Get all postCount
+	postCount, found := k.GetPostCount(ctx)
+	if found {
+		genesis.PostCount = postCount
+	}
+	genesis.StoredPostList = k.GetAllStoredPost(ctx)
+	// this line is used by starport scaffolding # genesis/module/export
+
+	return genesis
+}
+```
+
+### Create a Message
+```console
+ignite scaffold message createPost title body \
+  --module blog \
+  --response postIndex
+```
+
+
+
+### Handle Errors
+
+
+### Handle Events
 
 ## References
 - [Cosmos SDK Document](https://docs.cosmos.network/main)
