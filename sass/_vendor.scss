@@ -306,7 +306,7 @@ a:hover {
 }
 
 .hack code:after, .hack code:before {
-  content: "`";
+  content: "";
   display: inline
 }
 
@@ -880,7 +880,7 @@ select.form-control {
 }
 
 .dark pre code {
-  color: #00bcd4
+  color: #fff
 }
 
 .dark h1 a, .dark h2 a, .dark h3 a, .dark h4 a, .dark h5 a {
@@ -888,7 +888,7 @@ select.form-control {
 }
 
 .dark code, .dark strong {
-  color: #fff
+  color: #0f1419;
 }
 
 .dark code {
@@ -994,4 +994,12 @@ select.form-control {
 .dark .menu .menu-item.active, .dark .menu .menu-item:hover {
   color: #fff;
   border-color: #28282B
+}
+
+.dark p code {
+  color: #000;
+  background-color: #215aa012;
+  padding: .1em .4em;
+  margin-left: 0.1e;
+  margin-right: 0.1em;
 }
