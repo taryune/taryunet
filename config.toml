@@ -8,7 +8,7 @@ compile_sass = true
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = false
 
-title = "Blog"
+title = "taryu.net"
 description = ""
 generate_feed = true
 taxonomies = [
@@ -16,7 +16,7 @@ taxonomies = [
 ]
 
 [languages.ja]
-title = "Blog"
+title = "taryu.net"
 description = ""
 generate_feed = true
 taxonomies = [
@@ -37,4 +37,4 @@ after_dark_menu = [
     {url = "$BASE_URL/about", name = "About"},
     {url = "$BASE_URL/tags", name = "Tags"},
 ]
-after_dark_title = "Blog"
+after_dark_title = "taryu.net"
