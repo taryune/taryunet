@@ -206,10 +206,30 @@ a:hover {
   position: relative;
   display: inline-block;
   display: table-cell;
-  padding: 20px 0 30px;
+  padding: 20px 0 40px;
   margin: 0;
-  overflow: hidden
+  overflow: hidden;
+  font-size: 1.8em
 }
+
+.hack h2 {
+  font-size: 1.6em
+}
+
+.hack h3 {
+  font-size: 1.4em
+}
+
+.hack h4 {
+}
+
+.hack h5 {
+}
+
+.hack h6 {
+}
+
+
 
 .hack h1:after {
   content: "====================================================================================================";
@@ -224,32 +244,8 @@ a:hover {
 
 .hack h2, .hack h3, .hack h4, .hack h5, .hack h6 {
   position: relative;
-  margin-bottom: 1.75rem
 }
 
-.hack h2:before, .hack h3:before, .hack h4:before, .hack h5:before, .hack h6:before {
-  display: inline
-}
-
-.hack h2:before {
-  content: "## "
-}
-
-.hack h3:before {
-  content: "### "
-}
-
-.hack h4:before {
-  content: "#### "
-}
-
-.hack h5:before {
-  content: "##### "
-}
-
-.hack h6:before {
-  content: "###### "
-}
 
 .hack li {
   position: relative;
@@ -306,7 +302,7 @@ a:hover {
 }
 
 .hack code:after, .hack code:before {
-  content: "`";
+  content: "";
   display: inline
 }
 
@@ -407,29 +403,6 @@ p {
   right: 0;
   -ms-transform: translateX(50%);
   transform: translateX(50%)
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.75rem 0;
-  color: #778087
-}
-
-table td, table th {
-  vertical-align: top;
-  border: 1px solid #28282B;
-  line-height: 15px;
-  padding: 10px
-}
-
-table thead th {
-  font-size: 10px
-}
-
-table tbody td:first-child {
-  font-weight: 700;
-  color: #333
 }
 
 .form {
@@ -880,7 +853,6 @@ select.form-control {
 }
 
 .dark pre code {
-  color: #00bcd4
 }
 
 .dark h1 a, .dark h2 a, .dark h3 a, .dark h4 a, .dark h5 a {
@@ -888,24 +860,12 @@ select.form-control {
 }
 
 .dark code, .dark strong {
-  color: #fff
 }
 
 .dark code {
   font-weight: 100
 }
 
-.dark table {
-  color: #28282B
-}
-
-.dark table td, .dark table th {
-  border-color: #444
-}
-
-.dark table tbody td:first-child {
-  color: #fff
-}
 
 .dark .form-group label {
   color: #28282B;
@@ -987,11 +947,44 @@ select.form-control {
 }
 
 .dark .menu .menu-item {
-  color: #28282B;
+  color: #light28282B;
   border-color: rgba(95, 95, 95, .78)
 }
 
 .dark .menu .menu-item.active, .dark .menu .menu-item:hover {
   color: #fff;
   border-color: #28282B
+}
+
+.dark p code {
+  background-color: #215aa012;
+  padding: .1em .4em;
+  margin-left: 0.1e;
+  margin-right: 0.1em;
+}
+
+pre {
+  padding: 1rem;
+  overflow: auto;
+  padding: 1rem 0;
+}
+// The line numbers already provide some kind of left/right padding
+pre[data-linenos] {
+  padding: 1rem 0;
+}
+pre table td mark {
+  padding: 0 .4em;
+}
+// The line number cells
+pre table td:nth-of-type(1) {
+  text-align: center;
+  user-select: none;
+}
+pre mark {
+  // If you want your highlights to take the full width.
+  display: block;
+}
+pre table {
+  width: 100%;
+  border-collapse: collapse
 }
