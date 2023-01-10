@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>taryu.net - IgniteCLI</title>
+	<link href="https://taryu.net/tags/ignitecli/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://taryu.net"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2023-01-10T00:00:00+00:00</updated>
+	<id>https://taryu.net/tags/ignitecli/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Cosmos SDK Introduction and First Step for Building Your Own Blockchain</title>
+		<published>2023-01-10T00:00:00+00:00</published>
+		<updated>2023-01-10T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://taryu.net/cosmos-sdk-introduction/" type="text/html"/>
+		<id>https://taryu.net/cosmos-sdk-introduction/</id>
+		<content type="html">&lt;h2 id=&quot;tl-dr&quot;&gt;TL;DR&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Cosmos SDK Overview
+&lt;ul&gt;
+&lt;li&gt;Application-specific Blockchain&lt;&#x2F;li&gt;
+&lt;li&gt;Inter-blockchain Communication Protocol&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;Building the blockchain with Ignite CLI
+&lt;ul&gt;
+&lt;li&gt;Installing Ignite CLI&lt;&#x2F;li&gt;
+&lt;li&gt;Store Object&lt;&#x2F;li&gt;
+&lt;li&gt;Create a Message&lt;&#x2F;li&gt;
+&lt;li&gt;Error Handling&lt;&#x2F;li&gt;
+&lt;li&gt;Event Handling&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;cosmos-sdk-overview&quot;&gt;Cosmos SDK Overview&lt;&#x2F;h2&gt;
+&lt;p&gt;Cosmos SDK is an open source framework for developing Proof-of-Stake (PoS) and Proof-of-Authority (PoA) blockchains. Application-specific Blockchain is an open source framework for developing application-specific blockchains.&lt;&#x2F;p&gt;
+&lt;p&gt;Application-specific Blockchain is the core concept behind the Cosmos SDK.
+When developing dApps on a general-purpose chain such as Ethereum, developers must consider not only the governance of their own dApp, but also the governance of the underlying Ethereum chain itself. (2 Layers Governance)&lt;br &#x2F;&gt;
+On the other hand, application-specific blockchain allows applications to be developed from the Blockchain layer, so only 1 Layer of Governance needs to be considered.&lt;&#x2F;p&gt;
+&lt;p&gt;How about Token compatibility between dApps?&lt;br &#x2F;&gt;
+In Ethereum, there are token standards such as &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ethereum.org&#x2F;ja&#x2F;developers&#x2F;docs&#x2F;standards&#x2F;tokens&#x2F;erc-20&#x2F;&quot;&gt;ERC-20&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ethereum.org&#x2F;ja&#x2F;developers&#x2F;docs&#x2F;standards&#x2F;tokens&#x2F;erc-721&#x2F;&quot;&gt;ERC-721&lt;&#x2F;a&gt;, so it is possible to be handled between dApps in on the same chain.
+On the other hand, Token operations between different Governance chains, including application-specific blockchains, require a Bridge, which can be troublesome.
+This is where the  &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ibcprotocol.org&#x2F;&quot;&gt;Inter-Blockchain Communication Protocol (IBC)&lt;&#x2F;a&gt; comes in.
+IBC is a protocol for handling permissionless authentication and data transfer between two blockchains, and its functions are defined in the Interchain Standard (ICS).
+For example, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cosmos&#x2F;ibc&#x2F;blob&#x2F;main&#x2F;spec&#x2F;app&#x2F;ics-020-fungible-token-transfer&#x2F;README.md&quot;&gt;ICS-20&lt;&#x2F;a&gt; defines fungible token transfer like ERC-20.
+And, IBC can be easily implemented with Cosmos SDK.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;architecture&quot;&gt;Architecture&lt;&#x2F;h3&gt;
+&lt;p&gt;Next, we describe the architecture of the application-specific blockchain.&lt;br &#x2F;&gt;
+The architecture is designed to be modular.&lt;&#x2F;p&gt;
+
+  &lt;figure class=&quot;center&quot; &gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;tutorials.cosmos.network&#x2F;resized-images&#x2F;600&#x2F;academy&#x2F;2-cosmos-concepts&#x2F;images&#x2F;architecture_overview.png&quot; style=&quot;width: 100%;&quot; &#x2F;&gt;
+    
+      &lt;figcaption class=&quot;
+        center&quot;
+        
+          style=&quot;font-style: italic;&quot;
+        &gt;
+        
+          &lt;a rel=&quot;&quot;href=&quot;https:&amp;#x2F;&amp;#x2F;tutorials.cosmos.network&amp;#x2F;academy&amp;#x2F;2-cosmos-concepts&amp;#x2F;1-architecture.html&quot; target=&quot;_blink&quot;&gt;
+            Reference: Cosmos SDK Developer Portal - Introduction to Cosmos
+          &lt;&#x2F;a&gt;
+        
+      &lt;&#x2F;figcaption&gt;
+    
+  &lt;&#x2F;figure&gt;
+
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tendermint.com&#x2F;core&#x2F;&quot;&gt;Terndermint Core&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+Tendermint modules attend to consensus and networking, which are important components of any blockchain.
+This frees developers to focus on the application level without descending into lower-level blockchain concerns such as peer discovery, consensus, and transaction finalization.&lt;br &#x2F;&gt;
+Without Tendermint, developers would be forced to build software to address these concerns, which would add additional time, complexity, and cost to the development of their applications.&lt;br &#x2F;&gt;
+Also, with Terndermint Core, Transactions are finalized at block creation and fork is never created.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;ABCI&lt;br &#x2F;&gt;
+ABCI defines interfaces to communicate with the Application Layer.
+Provides a Socket when the implementation language of the Application and Tendermint are different.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Cosmos SDK&lt;br &#x2F;&gt;
+Cosmos SDK provides a rich set of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.cosmos.network&#x2F;main&#x2F;modules&quot;&gt;modules&lt;&#x2F;a&gt; such as governance, tokens, and IBC.
+So, developers are able to build their application-specific blockchain easily by using these modules.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;building-the-blockchain&quot;&gt;Building the Blockchain&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ignite.com&#x2F;&quot;&gt;Ignite CLI&lt;&#x2F;a&gt; is a feature-packed tool to accelarate blockchain development.
+It allows you to scaffold a blockchain with a single command and provides local execution environment.&lt;&#x2F;p&gt;
+&lt;p&gt;In this tutorial, you create a blog chain, let you write and read blog post from the blockchain.
+The version of Ignite CLI is &lt;code&gt;0.25.2&lt;&#x2F;code&gt;.&lt;br &#x2F;&gt;
+Full source code is here -&amp;gt;
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&quot;&gt;GitHub Repository&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;install-ignite-cli&quot;&gt;Install Ignite CLI&lt;&#x2F;h3&gt;
+&lt;p&gt;First, install Ignite CLI using the following command:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;curl https:&#x2F;&#x2F;get.ignite.com&#x2F;cli! | bash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Using macOS? write permisson is required.
+Run the following command:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;sudo curl https:&#x2F;&#x2F;get.ignite.com&#x2F;cli! | sudo bash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If you wanna install specific veriosn of Ignite CLI, like this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;curl https:&#x2F;&#x2F;get.ignite.com&#x2F;cli@v0.25.2! | bash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;create-your-blog-chain&quot;&gt;Create your blog chain&lt;&#x2F;h3&gt;
+&lt;p&gt;Now, create a new blockchain named &lt;code&gt;blog&lt;&#x2F;code&gt; with &lt;code&gt;ignite scaffold&lt;&#x2F;code&gt; command.
+You can see more details about &lt;code&gt;ignite scaffold&lt;&#x2F;code&gt; &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.ignite.com&#x2F;cli#ignite-scaffold&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;ignite scaffold chain blog
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then the following structure file will be created at &lt;code&gt;blog&#x2F;&lt;&#x2F;code&gt;.&lt;br &#x2F;&gt;
+A description of each folder can be found &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.cosmos.network&#x2F;v0.47&#x2F;building-modules&#x2F;structure&quot;&gt;here&lt;&#x2F;a&gt;.&lt;br &#x2F;&gt;
+The main directories you editting are &lt;code&gt;proto&#x2F;&lt;&#x2F;code&gt; and &lt;code&gt;x&#x2F;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;blog
+&lt;&#x2F;span&gt;&lt;span&gt;|+ .git&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|+ .github&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|+ app&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|+ cmd&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|+ docs&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|- proto&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt; |- blog&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  |- blog&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;   |  genesis.proto
+&lt;&#x2F;span&gt;&lt;span&gt;   |  params.proto
+&lt;&#x2F;span&gt;&lt;span&gt;   |  query.proto
+&lt;&#x2F;span&gt;&lt;span&gt;   |  tx.proto
+&lt;&#x2F;span&gt;&lt;span&gt;|+ testutil&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|+ ts-client&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|+ vue&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;|- x&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt; |- blog&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  |+ client&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  |+ keeper&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  |+ simulation&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  |+ types&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  |  genesis.go
+&lt;&#x2F;span&gt;&lt;span&gt;  |  genesis_test.go
+&lt;&#x2F;span&gt;&lt;span&gt;  |  module.go
+&lt;&#x2F;span&gt;&lt;span&gt;  |  module_simulation.go
+&lt;&#x2F;span&gt;&lt;span&gt;|  .gitignore
+&lt;&#x2F;span&gt;&lt;span&gt;|  config.yml
+&lt;&#x2F;span&gt;&lt;span&gt;|  go.mod
+&lt;&#x2F;span&gt;&lt;span&gt;|  go.sum
+&lt;&#x2F;span&gt;&lt;span&gt;|  readme.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;store-object&quot;&gt;Store Object&lt;&#x2F;h3&gt;
+&lt;p&gt;Create the following store that store data about a blog:&lt;br &#x2F;&gt;
+&lt;code&gt;PostCount&lt;&#x2F;code&gt;: The post counter, &lt;code&gt;uint64&lt;&#x2F;code&gt;&lt;br &#x2F;&gt;
+&lt;code&gt;StoredPost&lt;&#x2F;code&gt;: Blog posts,&lt;code&gt;Map&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;PostCount&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;proto&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-proto &quot;&gt;&lt;code class=&quot;language-proto&quot; data-lang=&quot;proto&quot;&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;message &lt;&#x2F;span&gt;&lt;span style=&quot;text-decoration:underline;color:#8be9fd;&quot;&gt;PostCount &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;uint64 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;count &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;; 
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Scaffold &lt;code&gt;PostCount&lt;&#x2F;code&gt; with Ignite CLI.&lt;br &#x2F;&gt;
+Be sure to &lt;code&gt;git commit&lt;&#x2F;code&gt; before and after executing the command.
+Ignite CLI does not provide a command to revert a scaffold command, so you need to manage it with Git.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;ignite scaffold single postCount count:uint \
+&lt;&#x2F;span&gt;&lt;span&gt;    --module blog \
+&lt;&#x2F;span&gt;&lt;span&gt;    --no-message
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;To scaffold CRUD for data stored in a single location run &lt;code&gt;ignite scaffold single NAME [field]...&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;You must add &lt;code&gt;--no-message.&lt;&#x2F;code&gt;, if you wanna control object by the application.
+If you omit it, Ignite CLI creates an sdk.Msg and an associated service whose purpose is to overwrite your &lt;code&gt;PostCount&lt;&#x2F;code&gt; object.&lt;&#x2F;p&gt;
+&lt;p&gt;Also, in &lt;code&gt;ignite scaffold&lt;&#x2F;code&gt;, the default type of &lt;code&gt;field&lt;&#x2F;code&gt; is string, so declare an integer type with &lt;code&gt;:int&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;You can find more detail about &lt;code&gt;ignite scaffold single&lt;&#x2F;code&gt; &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.ignite.com&#x2F;cli#ignite-scaffold-single&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;StoredPost&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;proto&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-proto &quot;&gt;&lt;code class=&quot;language-proto&quot; data-lang=&quot;proto&quot;&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;message &lt;&#x2F;span&gt;&lt;span style=&quot;text-decoration:underline;color:#8be9fd;&quot;&gt;StoredPost &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;string &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;index &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;; 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;string &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;title &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;; 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;string &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;body &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;; 
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Run &lt;code&gt;ignite scaffold map NAME [field]...&lt;&#x2F;code&gt; in the same way.&lt;br &#x2F;&gt;
+Index field can be specified with &lt;code&gt;--index&lt;&#x2F;code&gt;. In this case, &lt;code&gt;index&lt;&#x2F;code&gt; is used.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;ignite scaffold map storedPost title body \
+&lt;&#x2F;span&gt;&lt;span&gt;  --index index \
+&lt;&#x2F;span&gt;&lt;span&gt;  --module blog  \
+&lt;&#x2F;span&gt;&lt;span&gt;  --no-message
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Set the default genesis value start.&lt;br &#x2F;&gt;
+In default, &lt;code&gt;PostCount&lt;&#x2F;code&gt; is set as nullable. It is not correct. So you need to fix like this:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;458c3a2192ffeb724b7ab5df3caf362d7c7a7428&#x2F;proto&#x2F;blog&#x2F;blog&#x2F;genesis.proto&quot;&gt;proto&#x2F;blog&#x2F;blog&#x2F;genesis.proto&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;proto&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-proto &quot;&gt;&lt;code class=&quot;language-proto&quot; data-lang=&quot;proto&quot;&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; GenesisState defines the blog module&amp;#39;s genesis state.
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;message &lt;&#x2F;span&gt;&lt;span style=&quot;text-decoration:underline;color:#8be9fd;&quot;&gt;GenesisState &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8be9fd;&quot;&gt;Params &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;params &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;1 &lt;&#x2F;span&gt;&lt;span&gt;[(gogoproto&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nullable) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8be9fd;&quot;&gt;PostCount &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;postCount &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;2 &lt;&#x2F;span&gt;&lt;span&gt;[(gogoproto&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nullable) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;repeated &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8be9fd;&quot;&gt;StoredPost &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPostList &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;3 &lt;&#x2F;span&gt;&lt;span&gt;[(gogoproto&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nullable) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; this line is used by starport scaffolding # genesis&#x2F;proto&#x2F;state
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;When you edit &lt;code&gt;.proto&lt;&#x2F;code&gt; files, you need to recompile them using following command:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;ignite generate proto-go
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then, set genesis value, &lt;code&gt;PostCount.Count = 0&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;458c3a2192ffeb724b7ab5df3caf362d7c7a7428&#x2F;x&#x2F;blog&#x2F;types&#x2F;genesis.go&quot;&gt;x&#x2F;blog&#x2F;types&#x2F;genesis.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;DefaultGenesis&lt;&#x2F;span&gt;&lt;span&gt;() &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;GenesisState &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;GenesisState&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCount&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCount&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Count&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;uint64&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;		},
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;StoredPostList&lt;&#x2F;span&gt;&lt;span&gt;: []&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;StoredPost&lt;&#x2F;span&gt;&lt;span&gt;{},
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; this line is used by starport scaffolding # genesis&#x2F;types&#x2F;default
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Params&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;DefaultParams&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Fix other errors, due to the change of type.
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;commit&#x2F;458c3a2192ffeb724b7ab5df3caf362d7c7a7428?diff=split&quot;&gt;Diffs&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;458c3a2192ffeb724b7ab5df3caf362d7c7a7428&#x2F;x&#x2F;blog&#x2F;genesis.go&quot;&gt;x&#x2F;blog&#x2F;genesis.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; InitGenesis initializes the module&amp;#39;s state from a provided genesis state.
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;InitGenesis&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;ctx &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;Context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;k &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;keeper&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;Keeper&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;genState &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;GenesisState&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;SetPostCount&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;genState&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCount&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; Set all the storedPost
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, elem &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= range &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;genState&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;StoredPostList &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;SetStoredPost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;elem&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; this line is used by starport scaffolding # genesis&#x2F;module&#x2F;init
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;SetParams&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;genState&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Params&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; ExportGenesis returns the module&amp;#39;s exported genesis
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;ExportGenesis&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;ctx &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;Context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;k &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;keeper&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;Keeper&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;GenesisState &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;	genesis &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;DefaultGenesis&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;genesis&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Params &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetParams&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; Get all postCount
+&lt;&#x2F;span&gt;&lt;span&gt;	postCount, found &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetPostCount&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;found &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;genesis&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCount &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;postCount
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;genesis&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;StoredPostList &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetAllStoredPost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; this line is used by starport scaffolding # genesis&#x2F;module&#x2F;export
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;genesis
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;create-a-message&quot;&gt;Create a Message&lt;&#x2F;h3&gt;
+&lt;p&gt;Create a message to write to &lt;code&gt;StoredPost&lt;&#x2F;code&gt;.
+Run following command to create &lt;code&gt;createPost&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;ignite scaffold message createPost title body \
+&lt;&#x2F;span&gt;&lt;span&gt;  --module blog \
+&lt;&#x2F;span&gt;&lt;span&gt;  --response postIndex
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You can set response field by using &lt;code&gt;--response&lt;&#x2F;code&gt; option. (&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.ignite.com&#x2F;cli#ignite-scaffold-message&quot;&gt;more details&lt;&#x2F;a&gt;)
+By running &lt;code&gt;ignite scaffold message&lt;&#x2F;code&gt;, &lt;code&gt;&#x2F;x&#x2F;[module]&#x2F;keeper&#x2F;msg_server_[name].go&lt;&#x2F;code&gt; will be created. (&lt;code&gt;msg_server_create_post.go&lt;&#x2F;code&gt; at this time)&lt;br &#x2F;&gt;
+Then, impliment &lt;code&gt;CreatePost&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;About Keeper&lt;&#x2F;strong&gt;&lt;br &#x2F;&gt;
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tutorials.cosmos.network&#x2F;academy&#x2F;2-cosmos-concepts&#x2F;7-multistore-keepers.html&quot;&gt;Mutistore and Keepers&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+Keeper is responsible for accessing all stores in a Module.&lt;br &#x2F;&gt;
+Stores defined in the module are read&#x2F;written only by the methods defined in the keeper.
+If you come from a module-view-controller (MVC) world, then it helps to think of the keeper as the controller.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;aa52afc817c66047d0f9ab6df4eba54f6dd30752&#x2F;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post.go&quot;&gt;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;k &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;msgServer&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;CreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;goCtx &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;Context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;msg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;MsgCreatePost&lt;&#x2F;span&gt;&lt;span&gt;) (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;MsgCreatePostResponse&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	ctx &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;UnwrapSDKContext&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;goCtx&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; Get postCount from store
+&lt;&#x2F;span&gt;&lt;span&gt;	postCount, found &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Keeper&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetPostCount&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;if !&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;found &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8be9fd;&quot;&gt;panic&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;postCount is not found&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	newIndex &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;strconv&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;FormatUint&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;postCount&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Count&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	storedPost &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;StoredPost&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Index&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;newIndex&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;:  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; Store storedPost and postCount
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Keeper&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;SetStoredPost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;postCount&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Count&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;++
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Keeper&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;SetPostCount&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;postCount&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; Return newIndex
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;MsgCreatePostResponse&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostIndex&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;newIndex&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	}, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;nil
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Create &lt;code&gt;msg_server_create_post_test.go&lt;&#x2F;code&gt;, and write a test.
+(&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;commit&#x2F;aa52afc817c66047d0f9ab6df4eba54f6dd30752&quot;&gt;Diffs&lt;&#x2F;a&gt;)&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;aa52afc817c66047d0f9ab6df4eba54f6dd30752&#x2F;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post_test.go&quot;&gt;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post_test.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;package &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;keeper_test
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;keepertest &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;blog&#x2F;testutil&#x2F;keeper&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;blog&#x2F;x&#x2F;blog&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;blog&#x2F;x&#x2F;blog&#x2F;keeper&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;blog&#x2F;x&#x2F;blog&#x2F;types&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;context&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;testing&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;github.com&#x2F;cosmos&#x2F;cosmos-sdk&#x2F;types&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;github.com&#x2F;stretchr&#x2F;testify&#x2F;require&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;setupMsgServerCreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testing&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;TB&lt;&#x2F;span&gt;&lt;span&gt;) (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;MsgServer&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;keeper&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;Keeper&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;Context&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	k, ctx &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;keepertest&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;BlogKeeper&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;blog&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;InitGenesis&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;DefaultGenesis&lt;&#x2F;span&gt;&lt;span&gt;())
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;keeper&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;NewMsgServerImpl&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span&gt;), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;k&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;WrapSDKContext&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;TestCreatePostSuccess&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testing&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;T&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	msgServer, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, context &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;setupMsgServerCreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	createResponse, err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msgServer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;CreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;MsgCreatePost&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;Test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;:  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;This is a test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	})
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Nil&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;EqualValues&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;MsgCreatePostResponse&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostIndex&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	}, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;createResponse&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Run test:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;cd x&#x2F;blog&#x2F;keeper &amp;amp;&amp;amp; go test
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Let&#x27;s get the chain up and running in your local environment.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;ignite chain serve -r
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Sending &lt;code&gt;create-post&lt;&#x2F;code&gt; transaction by running following command:&lt;br &#x2F;&gt;
+You can refer to &lt;code&gt;blogd tx blog -h&lt;&#x2F;code&gt; for executable commands.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;blogd tx blog create-post &amp;quot;Test&amp;quot; &amp;quot;This is a test&amp;quot;  --from alice
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Check if there is the blog post:
+You can refer to &lt;code&gt;blogd q blog -h&lt;&#x2F;code&gt; for executable commands.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;blogd q blog list-stored-post
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;pagination:
+&lt;&#x2F;span&gt;&lt;span&gt;  next_key: null
+&lt;&#x2F;span&gt;&lt;span&gt;  total: &amp;quot;0&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;storedPost:
+&lt;&#x2F;span&gt;&lt;span&gt;- body: This is a test
+&lt;&#x2F;span&gt;&lt;span&gt;  index: &amp;quot;0&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  title: Test
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Congrats!&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;handle-errors&quot;&gt;Handle Errors&lt;&#x2F;h3&gt;
+&lt;p&gt;Impliment validation &lt;code&gt;Title&lt;&#x2F;code&gt; and &lt;code&gt;Body&lt;&#x2F;code&gt; of the &lt;code&gt;CreatePost&lt;&#x2F;code&gt;.(&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;commit&#x2F;6df92a8c682fd199ec281be34f83339332de1f8d&quot;&gt;Diffs&lt;&#x2F;a&gt;)&lt;br &#x2F;&gt;
+Define the errors.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;6df92a8c682fd199ec281be34f83339332de1f8d&#x2F;x&#x2F;blog&#x2F;types&#x2F;errors.go&quot;&gt;x&#x2F;blog&#x2F;types&#x2F;errors.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;var &lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;	ErrSample           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdkerrors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Register&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ModuleName&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;1100&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;sample error&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	ErrMissingPostTitle &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdkerrors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Register&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ModuleName&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;1101&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;title is missing&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	ErrMissingPostBody  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdkerrors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Register&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ModuleName&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;1102&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;body is missing&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Create &lt;code&gt;x&#x2F;blog&#x2F;types&#x2F;full_post.go&lt;&#x2F;code&gt; and implement &lt;code&gt;Validate()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;6df92a8c682fd199ec281be34f83339332de1f8d&#x2F;x&#x2F;blog&#x2F;types&#x2F;full_post.go&quot;&gt;x&#x2F;blog&#x2F;types&#x2F;full_post.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;package &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;fmt&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;storedPost &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;StoredPost&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetPostTitle&lt;&#x2F;span&gt;&lt;span&gt;() (&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;title &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;string&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8be9fd;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;&amp;lt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;0 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ErrMissingPostTitle&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Wrap&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;fmt&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Sprintf&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;index = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;%s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Index&lt;&#x2F;span&gt;&lt;span&gt;))
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;nil
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;storedPost &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;StoredPost&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetPostBody&lt;&#x2F;span&gt;&lt;span&gt;() (&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;body &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;string&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8be9fd;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;&amp;lt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;0 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ErrMissingPostBody&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Wrap&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;fmt&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Sprintf&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;index = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;%s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Index&lt;&#x2F;span&gt;&lt;span&gt;))
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;nil
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;storedPost &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;StoredPost&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Validate&lt;&#x2F;span&gt;&lt;span&gt;() (&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#66d9ef;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetPostTitle&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;!= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;nil &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;GetPostBody&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;!= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;nil &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Add validation before storing objects.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;6df92a8c682fd199ec281be34f83339332de1f8d&#x2F;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post.go&quot;&gt;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;storedPost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Validate&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;!= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;nil &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;nil&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Write some tests.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;6df92a8c682fd199ec281be34f83339332de1f8d&#x2F;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post_test.go&quot;&gt;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post_test.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;TestCreatePostBadTitle&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testing&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;T&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	msgServer, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, context &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;setupMsgServerCreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	createResponse, err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msgServer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;CreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;MsgCreatePost&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;:  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;This is a test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	})
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Nil&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;createResponse&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;EqualError&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;index = 0: title is missing&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;TestCreatePostBadBody&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testing&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;T&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	msgServer, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, context &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;setupMsgServerCreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	createResponse, err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msgServer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;CreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;MsgCreatePost&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;Test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;:  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	})
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Nil&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;createResponse&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;EqualError&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;index = 0: body is missing&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Run test.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;cd x&#x2F;blog&#x2F;keeper &amp;amp;&amp;amp; go test
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;handle-events&quot;&gt;Handle Events&lt;&#x2F;h3&gt;
+&lt;p&gt;By emitting an event, it is possible to log the event information in the transaction.
+(&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;commit&#x2F;03df1c10a8b4425c431f8dbe36248c20c61d923c&quot;&gt;Diffs&lt;&#x2F;a&gt;)
+Let&#x27;s define &lt;code&gt;new-post-created&lt;&#x2F;code&gt; event.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;03df1c10a8b4425c431f8dbe36248c20c61d923c&#x2F;x&#x2F;blog&#x2F;types&#x2F;keys.go&quot;&gt;x&#x2F;blog&#x2F;types&#x2F;keys.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;color:#6272a4;&quot;&gt;&#x2F;&#x2F; CreatePost Events
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedEventType &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;new-post-created&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedCreator   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;creator&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedPostIndex &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;post-index&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedTitle     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;title&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedBody      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;body&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Emit event after storing objects.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;03df1c10a8b4425c431f8dbe36248c20c61d923c&#x2F;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post.go&quot;&gt;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;EventManager&lt;&#x2F;span&gt;&lt;span&gt;()&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;EmitEvent&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;NewEvent&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedEventType&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;NewAttribute&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedCreator&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Creator&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;NewAttribute&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedPostIndex&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;newIndex&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;NewAttribute&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedTitle&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;NewAttribute&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;PostCreatedBody&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;		),
+&lt;&#x2F;span&gt;&lt;span&gt;	)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Write a test.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;03df1c10a8b4425c431f8dbe36248c20c61d923c&#x2F;testutil&#x2F;constants.go&quot;&gt;testutil&#x2F;constants.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;package &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testutil
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Alice &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;cosmos1jmjfq0tplp9tmx4v9uemw72y4d2wa5nr3xn9d3&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Bob   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;cosmos1xyxs3skf3f4jfqeuv89yyaqvjc6lffavxqhc8g&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Carol &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;cosmos1e0w5t53nrq7p66fye6c8p0ynyhf6y24l4yuxd7&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;taryune&#x2F;cosmos-sdk-tutorial-blog&#x2F;blob&#x2F;03df1c10a8b4425c431f8dbe36248c20c61d923c&#x2F;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post_test.go&quot;&gt;x&#x2F;blog&#x2F;keeper&#x2F;msg_server_create_post_test.go&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;go&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-go &quot;&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;TestCreatePostEmitted&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ffb86c;&quot;&gt;t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testing&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#8be9fd;&quot;&gt;T&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	msgServer, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, context &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;setupMsgServerCreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, err &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;msgServer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;CreatePost&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;MsgCreatePost&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Creator&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testutil&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Alice&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Title&lt;&#x2F;span&gt;&lt;span&gt;:   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;Test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Body&lt;&#x2F;span&gt;&lt;span&gt;:    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;This is a test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	})
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Nil&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	ctx &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;UnwrapSDKContext&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;NotNil&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	events &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;StringifyEvents&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;EventManager&lt;&#x2F;span&gt;&lt;span&gt;()&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;ABCIEvents&lt;&#x2F;span&gt;&lt;span&gt;())
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;Len&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;events&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	event &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;events&lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#50fa7b;&quot;&gt;EqualValues&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;StringEvent&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Type&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;new-post-created&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Attributes&lt;&#x2F;span&gt;&lt;span&gt;: []&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;sdk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Attribute&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;			{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Key&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;creator&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Value&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;testutil&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff79c6;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Alice&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;			{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Key&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;post-index&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Value&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;			{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Key&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Value&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;Test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;			{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Key&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;body&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;Value&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&amp;quot;This is a test&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;		},
+&lt;&#x2F;span&gt;&lt;span&gt;	}, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;event&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Check if the event is emitted.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;blogd tx blog create-post &amp;quot;Test&amp;quot; &amp;quot;This is a test&amp;quot;  --from alice
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;txhash: FB80FE1BF5A3FA7CBA588F9A7A064B72A1B29CFC0D8B16AB52180BFE19119CF9
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Query &lt;code&gt;txhash&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;console&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-console &quot;&gt;&lt;code class=&quot;language-console&quot; data-lang=&quot;console&quot;&gt;&lt;span&gt;blogd q tx FB80FE1BF5A3FA7CBA588F9A7A064B72A1B29CFC0D8B16AB52180BFE19119CF9 --output json | jq
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;new-post-created&lt;&#x2F;code&gt; was emitted!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#282a36;color:#f8f8f2;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;logs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [
+&lt;&#x2F;span&gt;&lt;span&gt;    {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;msg_index&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bd93f9;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;log&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;events&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [
+&lt;&#x2F;span&gt;&lt;span&gt;        {
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;attributes&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [
+&lt;&#x2F;span&gt;&lt;span&gt;            {
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;action&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;&#x2F;blog.blog.MsgCreatePost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            }
+&lt;&#x2F;span&gt;&lt;span&gt;          ]
+&lt;&#x2F;span&gt;&lt;span&gt;        },
+&lt;&#x2F;span&gt;&lt;span&gt;        {
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;new-post-created&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;attributes&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [
+&lt;&#x2F;span&gt;&lt;span&gt;            {
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;creator&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;cosmos1yf2aal544uf8n0ruecl3ytx066glfjjphskhdh&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            },
+&lt;&#x2F;span&gt;&lt;span&gt;            {
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;post-index&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            },
+&lt;&#x2F;span&gt;&lt;span&gt;            {
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;Test&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            },
+&lt;&#x2F;span&gt;&lt;span&gt;            {
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#f1fa8c;&quot;&gt;This is a test&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eeeeee;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            }
+&lt;&#x2F;span&gt;&lt;span&gt;          ]
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;      ]
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  ],
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;references&quot;&gt;References&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.cosmos.network&#x2F;main&quot;&gt;Cosmos SDK Document&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tutorials.cosmos.network&#x2F;&quot;&gt;Cosmos SDK - Developer Portal&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.ignite.com&#x2F;&quot;&gt;Ignite CLI | Ignite Cli Docs&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+	</entry>
+</feed>

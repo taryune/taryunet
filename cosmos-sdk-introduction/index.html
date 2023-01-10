@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <title>taryu.net</title>
+
+      
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://taryu.net/atom.xml">
+      
+
+      
+          <link rel="stylesheet" href="https://taryu.net/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                          
+                          
+                          
+                        
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;taryu.net">
+                                <span itemprop="name">Home</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;taryu.net&#x2F;about">
+                                <span itemprop="name">About</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;taryu.net&#x2F;tags">
+                                <span itemprop="name">Tags</span>
+                            </a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;taryu.net&#x2F;ja&#x2F;cosmos-sdk-introduction&#x2F;">
+                              <span itemprop="name">JA</span>
+                            </a>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">Cosmos SDK Introduction and First Step for Building Your Own Blockchain</h1>
+        <span class="muted">
+    Published: 2023-01-10
+    <a class="twitter-share-button"
+       href="https://twitter.com/intent/tweet?text=Cosmos SDK Introduction and First Step for Building Your Own Blockchain%0D%0Ahttps:&#x2F;&#x2F;taryu.net&#x2F;cosmos-sdk-introduction&#x2F;"
+  data-size="large" target="_blank">
+        Tweet
+    </a>
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <h2 id="tl-dr">TL;DR</h2>
+<ul>
+<li>Cosmos SDK Overview
+<ul>
+<li>Application-specific Blockchain</li>
+<li>Inter-blockchain Communication Protocol</li>
+</ul>
+</li>
+<li>Building the blockchain with Ignite CLI
+<ul>
+<li>Installing Ignite CLI</li>
+<li>Store Object</li>
+<li>Create a Message</li>
+<li>Error Handling</li>
+<li>Event Handling</li>
+</ul>
+</li>
+</ul>
+<span id="continue-reading"></span><h2 id="cosmos-sdk-overview">Cosmos SDK Overview</h2>
+<p>Cosmos SDK is an open source framework for developing Proof-of-Stake (PoS) and Proof-of-Authority (PoA) blockchains. Application-specific Blockchain is an open source framework for developing application-specific blockchains.</p>
+<p>Application-specific Blockchain is the core concept behind the Cosmos SDK.
+When developing dApps on a general-purpose chain such as Ethereum, developers must consider not only the governance of their own dApp, but also the governance of the underlying Ethereum chain itself. (2 Layers Governance)<br />
+On the other hand, application-specific blockchain allows applications to be developed from the Blockchain layer, so only 1 Layer of Governance needs to be considered.</p>
+<p>How about Token compatibility between dApps?<br />
+In Ethereum, there are token standards such as <a rel="noopener" target="_blank" href="https://ethereum.org/ja/developers/docs/standards/tokens/erc-20/">ERC-20</a> and <a rel="noopener" target="_blank" href="https://ethereum.org/ja/developers/docs/standards/tokens/erc-721/">ERC-721</a>, so it is possible to be handled between dApps in on the same chain.
+On the other hand, Token operations between different Governance chains, including application-specific blockchains, require a Bridge, which can be troublesome.
+This is where the  <a rel="noopener" target="_blank" href="https://ibcprotocol.org/">Inter-Blockchain Communication Protocol (IBC)</a> comes in.
+IBC is a protocol for handling permissionless authentication and data transfer between two blockchains, and its functions are defined in the Interchain Standard (ICS).
+For example, <a rel="noopener" target="_blank" href="https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md">ICS-20</a> defines fungible token transfer like ERC-20.
+And, IBC can be easily implemented with Cosmos SDK.</p>
+<h3 id="architecture">Architecture</h3>
+<p>Next, we describe the architecture of the application-specific blockchain.<br />
+The architecture is designed to be modular.</p>
+
+  <figure class="center" >
+    <img src="https://tutorials.cosmos.network/resized-images/600/academy/2-cosmos-concepts/images/architecture_overview.png" style="width: 100%;" />
+    
+      <figcaption class="
+        center"
+        
+          style="font-style: italic;"
+        >
+        
+          <a rel=""href="https:&#x2F;&#x2F;tutorials.cosmos.network&#x2F;academy&#x2F;2-cosmos-concepts&#x2F;1-architecture.html" target="_blink">
+            Reference: Cosmos SDK Developer Portal - Introduction to Cosmos
+          </a>
+        
+      </figcaption>
+    
+  </figure>
+
+<ul>
+<li>
+<p><a rel="noopener" target="_blank" href="https://tendermint.com/core/">Terndermint Core</a><br />
+Tendermint modules attend to consensus and networking, which are important components of any blockchain.
+This frees developers to focus on the application level without descending into lower-level blockchain concerns such as peer discovery, consensus, and transaction finalization.<br />
+Without Tendermint, developers would be forced to build software to address these concerns, which would add additional time, complexity, and cost to the development of their applications.<br />
+Also, with Terndermint Core, Transactions are finalized at block creation and fork is never created.</p>
+</li>
+<li>
+<p>ABCI<br />
+ABCI defines interfaces to communicate with the Application Layer.
+Provides a Socket when the implementation language of the Application and Tendermint are different.</p>
+</li>
+<li>
+<p>Cosmos SDK<br />
+Cosmos SDK provides a rich set of <a rel="noopener" target="_blank" href="https://docs.cosmos.network/main/modules">modules</a> such as governance, tokens, and IBC.
+So, developers are able to build their application-specific blockchain easily by using these modules.</p>
+</li>
+</ul>
+<h2 id="building-the-blockchain">Building the Blockchain</h2>
+<p><a rel="noopener" target="_blank" href="https://ignite.com/">Ignite CLI</a> is a feature-packed tool to accelarate blockchain development.
+It allows you to scaffold a blockchain with a single command and provides local execution environment.</p>
+<p>In this tutorial, you create a blog chain, let you write and read blog post from the blockchain.
+The version of Ignite CLI is <code>0.25.2</code>.<br />
+Full source code is here -&gt;
+<a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog">GitHub Repository</a></p>
+<h3 id="install-ignite-cli">Install Ignite CLI</h3>
+<p>First, install Ignite CLI using the following command:</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>curl https://get.ignite.com/cli! | bash
+</span></code></pre>
+<p>Using macOS? write permisson is required.
+Run the following command:</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>sudo curl https://get.ignite.com/cli! | sudo bash
+</span></code></pre>
+<p>If you wanna install specific veriosn of Ignite CLI, like this:</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>curl https://get.ignite.com/cli@v0.25.2! | bash
+</span></code></pre>
+<h3 id="create-your-blog-chain">Create your blog chain</h3>
+<p>Now, create a new blockchain named <code>blog</code> with <code>ignite scaffold</code> command.
+You can see more details about <code>ignite scaffold</code> <a rel="noopener" target="_blank" href="https://docs.ignite.com/cli#ignite-scaffold">here</a></p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>ignite scaffold chain blog
+</span></code></pre>
+<p>Then the following structure file will be created at <code>blog/</code>.<br />
+A description of each folder can be found <a rel="noopener" target="_blank" href="https://docs.cosmos.network/v0.47/building-modules/structure">here</a>.<br />
+The main directories you editting are <code>proto/</code> and <code>x/</code>.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>blog
+</span><span>|+ .git/
+</span><span>|+ .github/
+</span><span>|+ app/
+</span><span>|+ cmd/
+</span><span>|+ docs/
+</span><span>|- proto/
+</span><span> |- blog/
+</span><span>  |- blog/
+</span><span>   |  genesis.proto
+</span><span>   |  params.proto
+</span><span>   |  query.proto
+</span><span>   |  tx.proto
+</span><span>|+ testutil/
+</span><span>|+ ts-client/
+</span><span>|+ vue/
+</span><span>|- x/
+</span><span> |- blog/
+</span><span>  |+ client/
+</span><span>  |+ keeper/
+</span><span>  |+ simulation/
+</span><span>  |+ types/
+</span><span>  |  genesis.go
+</span><span>  |  genesis_test.go
+</span><span>  |  module.go
+</span><span>  |  module_simulation.go
+</span><span>|  .gitignore
+</span><span>|  config.yml
+</span><span>|  go.mod
+</span><span>|  go.sum
+</span><span>|  readme.md
+</span></code></pre>
+<h3 id="store-object">Store Object</h3>
+<p>Create the following store that store data about a blog:<br />
+<code>PostCount</code>: The post counter, <code>uint64</code><br />
+<code>StoredPost</code>: Blog posts,<code>Map</code></p>
+<p><strong>PostCount</strong></p>
+<pre data-lang="proto" style="background-color:#282a36;color:#f8f8f2;" class="language-proto "><code class="language-proto" data-lang="proto"><span style="font-style:italic;color:#8be9fd;">message </span><span style="text-decoration:underline;color:#8be9fd;">PostCount </span><span>{
+</span><span>  </span><span style="font-style:italic;color:#66d9ef;">uint64 </span><span style="color:#ffffff;">count </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">1</span><span>; 
+</span><span>}
+</span></code></pre>
+<p>Scaffold <code>PostCount</code> with Ignite CLI.<br />
+Be sure to <code>git commit</code> before and after executing the command.
+Ignite CLI does not provide a command to revert a scaffold command, so you need to manage it with Git.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>ignite scaffold single postCount count:uint \
+</span><span>    --module blog \
+</span><span>    --no-message
+</span></code></pre>
+<p>To scaffold CRUD for data stored in a single location run <code>ignite scaffold single NAME [field]...</code></p>
+<p>You must add <code>--no-message.</code>, if you wanna control object by the application.
+If you omit it, Ignite CLI creates an sdk.Msg and an associated service whose purpose is to overwrite your <code>PostCount</code> object.</p>
+<p>Also, in <code>ignite scaffold</code>, the default type of <code>field</code> is string, so declare an integer type with <code>:int</code>.</p>
+<p>You can find more detail about <code>ignite scaffold single</code> <a rel="noopener" target="_blank" href="https://docs.ignite.com/cli#ignite-scaffold-single">here</a></p>
+<p><strong>StoredPost</strong></p>
+<pre data-lang="proto" style="background-color:#282a36;color:#f8f8f2;" class="language-proto "><code class="language-proto" data-lang="proto"><span style="font-style:italic;color:#8be9fd;">message </span><span style="text-decoration:underline;color:#8be9fd;">StoredPost </span><span>{
+</span><span>  </span><span style="font-style:italic;color:#66d9ef;">string </span><span style="color:#ffffff;">index </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">1</span><span>; 
+</span><span>  </span><span style="font-style:italic;color:#66d9ef;">string </span><span style="color:#ffffff;">title </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">2</span><span>; 
+</span><span>  </span><span style="font-style:italic;color:#66d9ef;">string </span><span style="color:#ffffff;">body </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">3</span><span>; 
+</span><span>}
+</span></code></pre>
+<p>Run <code>ignite scaffold map NAME [field]...</code> in the same way.<br />
+Index field can be specified with <code>--index</code>. In this case, <code>index</code> is used.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>ignite scaffold map storedPost title body \
+</span><span>  --index index \
+</span><span>  --module blog  \
+</span><span>  --no-message
+</span></code></pre>
+<p>Set the default genesis value start.<br />
+In default, <code>PostCount</code> is set as nullable. It is not correct. So you need to fix like this:</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/458c3a2192ffeb724b7ab5df3caf362d7c7a7428/proto/blog/blog/genesis.proto">proto/blog/blog/genesis.proto</a></li>
+</ul>
+<pre data-lang="proto" style="background-color:#282a36;color:#f8f8f2;" class="language-proto "><code class="language-proto" data-lang="proto"><span style="color:#6272a4;">// GenesisState defines the blog module&#39;s genesis state.
+</span><span style="font-style:italic;color:#8be9fd;">message </span><span style="text-decoration:underline;color:#8be9fd;">GenesisState </span><span>{
+</span><span>  </span><span style="color:#8be9fd;">Params </span><span style="color:#ffffff;">params </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">1 </span><span>[(gogoproto</span><span style="color:#ff79c6;">.</span><span>nullable) </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">false</span><span>];
+</span><span>  </span><span style="color:#8be9fd;">PostCount </span><span style="color:#ffffff;">postCount </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">2 </span><span>[(gogoproto</span><span style="color:#ff79c6;">.</span><span>nullable) </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">false</span><span>];
+</span><span>  </span><span style="color:#ff79c6;">repeated </span><span style="color:#8be9fd;">StoredPost </span><span style="color:#ffffff;">storedPostList </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">3 </span><span>[(gogoproto</span><span style="color:#ff79c6;">.</span><span>nullable) </span><span style="color:#ff79c6;">= </span><span style="color:#bd93f9;">false</span><span>];
+</span><span>  </span><span style="color:#6272a4;">// this line is used by starport scaffolding # genesis/proto/state
+</span><span>}
+</span></code></pre>
+<p>When you edit <code>.proto</code> files, you need to recompile them using following command:</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>ignite generate proto-go
+</span></code></pre>
+<p>Then, set genesis value, <code>PostCount.Count = 0</code>.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/458c3a2192ffeb724b7ab5df3caf362d7c7a7428/x/blog/types/genesis.go">x/blog/types/genesis.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">DefaultGenesis</span><span>() </span><span style="color:#ff79c6;">*</span><span style="font-style:italic;color:#8be9fd;">GenesisState </span><span>{
+</span><span>	</span><span style="color:#ff79c6;">return &amp;</span><span style="color:#ffffff;">GenesisState</span><span>{
+</span><span>		</span><span style="color:#ffffff;">PostCount</span><span>: </span><span style="color:#ffffff;">PostCount</span><span>{
+</span><span>			</span><span style="color:#ffffff;">Count</span><span>: </span><span style="font-style:italic;color:#66d9ef;">uint64</span><span>(</span><span style="color:#bd93f9;">0</span><span>),
+</span><span>		},
+</span><span>		</span><span style="color:#ffffff;">StoredPostList</span><span>: []</span><span style="font-style:italic;color:#8be9fd;">StoredPost</span><span>{},
+</span><span>		</span><span style="color:#6272a4;">// this line is used by starport scaffolding # genesis/types/default
+</span><span>		</span><span style="color:#ffffff;">Params</span><span>: </span><span style="color:#50fa7b;">DefaultParams</span><span>(),
+</span><span>	}
+</span><span>}
+</span></code></pre>
+<p>Fix other errors, due to the change of type.
+<a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/commit/458c3a2192ffeb724b7ab5df3caf362d7c7a7428?diff=split">Diffs</a></p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/458c3a2192ffeb724b7ab5df3caf362d7c7a7428/x/blog/genesis.go">x/blog/genesis.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#6272a4;">// InitGenesis initializes the module&#39;s state from a provided genesis state.
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">InitGenesis</span><span>(</span><span style="font-style:italic;color:#ffb86c;">ctx </span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">Context</span><span>, </span><span style="font-style:italic;color:#ffb86c;">k </span><span style="color:#ffffff;">keeper</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">Keeper</span><span>, </span><span style="font-style:italic;color:#ffb86c;">genState </span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">GenesisState</span><span>) {
+</span><span>	</span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">SetPostCount</span><span>(</span><span style="color:#ffffff;">ctx</span><span>, </span><span style="color:#ffffff;">genState</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">PostCount</span><span>)
+</span><span>	</span><span style="color:#6272a4;">// Set all the storedPost
+</span><span>	</span><span style="color:#ff79c6;">for </span><span style="color:#bd93f9;">_</span><span>, elem </span><span style="color:#ff79c6;">:= range </span><span style="color:#ffffff;">genState</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">StoredPostList </span><span>{
+</span><span>		</span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">SetStoredPost</span><span>(</span><span style="color:#ffffff;">ctx</span><span>, </span><span style="color:#ffffff;">elem</span><span>)
+</span><span>	}
+</span><span>	</span><span style="color:#6272a4;">// this line is used by starport scaffolding # genesis/module/init
+</span><span>	</span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">SetParams</span><span>(</span><span style="color:#ffffff;">ctx</span><span>, </span><span style="color:#ffffff;">genState</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Params</span><span>)
+</span><span>}
+</span></code></pre>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#6272a4;">// ExportGenesis returns the module&#39;s exported genesis
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">ExportGenesis</span><span>(</span><span style="font-style:italic;color:#ffb86c;">ctx </span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">Context</span><span>, </span><span style="font-style:italic;color:#ffb86c;">k </span><span style="color:#ffffff;">keeper</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">Keeper</span><span>) </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">GenesisState </span><span>{
+</span><span>	genesis </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">DefaultGenesis</span><span>()
+</span><span>	</span><span style="color:#ffffff;">genesis</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Params </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">GetParams</span><span>(</span><span style="color:#ffffff;">ctx</span><span>)
+</span><span>
+</span><span>	</span><span style="color:#6272a4;">// Get all postCount
+</span><span>	postCount, found </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">GetPostCount</span><span>(</span><span style="color:#ffffff;">ctx</span><span>)
+</span><span>	</span><span style="color:#ff79c6;">if </span><span style="color:#ffffff;">found </span><span>{
+</span><span>		</span><span style="color:#ffffff;">genesis</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">PostCount </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">postCount
+</span><span>	}
+</span><span>	</span><span style="color:#ffffff;">genesis</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">StoredPostList </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">GetAllStoredPost</span><span>(</span><span style="color:#ffffff;">ctx</span><span>)
+</span><span>	</span><span style="color:#6272a4;">// this line is used by starport scaffolding # genesis/module/export
+</span><span>
+</span><span>	</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">genesis
+</span><span>}
+</span></code></pre>
+<h3 id="create-a-message">Create a Message</h3>
+<p>Create a message to write to <code>StoredPost</code>.
+Run following command to create <code>createPost</code>:</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>ignite scaffold message createPost title body \
+</span><span>  --module blog \
+</span><span>  --response postIndex
+</span></code></pre>
+<p>You can set response field by using <code>--response</code> option. (<a rel="noopener" target="_blank" href="https://docs.ignite.com/cli#ignite-scaffold-message">more details</a>)
+By running <code>ignite scaffold message</code>, <code>/x/[module]/keeper/msg_server_[name].go</code> will be created. (<code>msg_server_create_post.go</code> at this time)<br />
+Then, impliment <code>CreatePost</code>.</p>
+<p><strong>About Keeper</strong><br />
+<a rel="noopener" target="_blank" href="https://tutorials.cosmos.network/academy/2-cosmos-concepts/7-multistore-keepers.html">Mutistore and Keepers</a><br />
+Keeper is responsible for accessing all stores in a Module.<br />
+Stores defined in the module are read/written only by the methods defined in the keeper.
+If you come from a module-view-controller (MVC) world, then it helps to think of the keeper as the controller.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/aa52afc817c66047d0f9ab6df4eba54f6dd30752/x/blog/keeper/msg_server_create_post.go">x/blog/keeper/msg_server_create_post.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="font-style:italic;color:#8be9fd;">func </span><span>(</span><span style="font-style:italic;color:#ffb86c;">k </span><span style="font-style:italic;color:#8be9fd;">msgServer</span><span>) </span><span style="color:#50fa7b;">CreatePost</span><span>(</span><span style="font-style:italic;color:#ffb86c;">goCtx </span><span style="color:#ffffff;">context</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">Context</span><span>, </span><span style="font-style:italic;color:#ffb86c;">msg </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">MsgCreatePost</span><span>) (</span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">MsgCreatePostResponse</span><span>, </span><span style="font-style:italic;color:#66d9ef;">error</span><span>) {
+</span><span>	ctx </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">UnwrapSDKContext</span><span>(</span><span style="color:#ffffff;">goCtx</span><span>)
+</span><span>
+</span><span>  </span><span style="color:#6272a4;">// Get postCount from store
+</span><span>	postCount, found </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Keeper</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">GetPostCount</span><span>(</span><span style="color:#ffffff;">ctx</span><span>)
+</span><span>	</span><span style="color:#ff79c6;">if !</span><span style="color:#ffffff;">found </span><span>{
+</span><span>		</span><span style="color:#8be9fd;">panic</span><span>(</span><span style="color:#f1fa8c;">&quot;postCount is not found&quot;</span><span>)
+</span><span>	}
+</span><span>
+</span><span>	newIndex </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">strconv</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">FormatUint</span><span>(</span><span style="color:#ffffff;">postCount</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Count</span><span>, </span><span style="color:#bd93f9;">10</span><span>)
+</span><span>	storedPost </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">StoredPost</span><span>{
+</span><span>		</span><span style="color:#ffffff;">Index</span><span>: </span><span style="color:#ffffff;">newIndex</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Title</span><span>: </span><span style="color:#ffffff;">msg</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Title</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Body</span><span>:  </span><span style="color:#ffffff;">msg</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Body</span><span>,
+</span><span>	}
+</span><span>
+</span><span>  </span><span style="color:#6272a4;">// Store storedPost and postCount
+</span><span>	</span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Keeper</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">SetStoredPost</span><span>(</span><span style="color:#ffffff;">ctx</span><span>, </span><span style="color:#ffffff;">storedPost</span><span>)
+</span><span>	</span><span style="color:#ffffff;">postCount</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Count</span><span style="color:#ff79c6;">++
+</span><span>	</span><span style="color:#ffffff;">k</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Keeper</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">SetPostCount</span><span>(</span><span style="color:#ffffff;">ctx</span><span>, </span><span style="color:#ffffff;">postCount</span><span>)
+</span><span>
+</span><span>  </span><span style="color:#6272a4;">// Return newIndex
+</span><span>	</span><span style="color:#ff79c6;">return &amp;</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">MsgCreatePostResponse</span><span>{
+</span><span>		</span><span style="color:#ffffff;">PostIndex</span><span>: </span><span style="color:#ffffff;">newIndex</span><span>,
+</span><span>	}, </span><span style="color:#bd93f9;">nil
+</span><span>}
+</span></code></pre>
+<p>Create <code>msg_server_create_post_test.go</code>, and write a test.
+(<a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/commit/aa52afc817c66047d0f9ab6df4eba54f6dd30752">Diffs</a>)</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/aa52afc817c66047d0f9ab6df4eba54f6dd30752/x/blog/keeper/msg_server_create_post_test.go">x/blog/keeper/msg_server_create_post_test.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#ff79c6;">package </span><span style="color:#ffffff;">keeper_test
+</span><span>
+</span><span style="color:#ff79c6;">import </span><span>(
+</span><span>	</span><span style="color:#ffffff;">keepertest </span><span style="color:#f1fa8c;">&quot;blog/testutil/keeper&quot;
+</span><span>	</span><span style="color:#f1fa8c;">&quot;blog/x/blog&quot;
+</span><span>	</span><span style="color:#f1fa8c;">&quot;blog/x/blog/keeper&quot;
+</span><span>	</span><span style="color:#f1fa8c;">&quot;blog/x/blog/types&quot;
+</span><span>	</span><span style="color:#f1fa8c;">&quot;context&quot;
+</span><span>	</span><span style="color:#f1fa8c;">&quot;testing&quot;
+</span><span>
+</span><span>	</span><span style="color:#ffffff;">sdk </span><span style="color:#f1fa8c;">&quot;github.com/cosmos/cosmos-sdk/types&quot;
+</span><span>	</span><span style="color:#f1fa8c;">&quot;github.com/stretchr/testify/require&quot;
+</span><span>)
+</span><span>
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">setupMsgServerCreatePost</span><span>(</span><span style="font-style:italic;color:#ffb86c;">t </span><span style="color:#ffffff;">testing</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">TB</span><span>) (</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">MsgServer</span><span>, </span><span style="color:#ffffff;">keeper</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">Keeper</span><span>, </span><span style="color:#ffffff;">context</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">Context</span><span>) {
+</span><span>	k, ctx </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">keepertest</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">BlogKeeper</span><span>(</span><span style="color:#ffffff;">t</span><span>)
+</span><span>	</span><span style="color:#ffffff;">blog</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">InitGenesis</span><span>(</span><span style="color:#ffffff;">ctx</span><span>, </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">k</span><span>, </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">DefaultGenesis</span><span>())
+</span><span>	</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">keeper</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">NewMsgServerImpl</span><span>(</span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">k</span><span>), </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">k</span><span>, </span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">WrapSDKContext</span><span>(</span><span style="color:#ffffff;">ctx</span><span>)
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">TestCreatePostSuccess</span><span>(</span><span style="font-style:italic;color:#ffb86c;">t </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">testing</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">T</span><span>) {
+</span><span>	msgServer, </span><span style="color:#bd93f9;">_</span><span>, context </span><span style="color:#ff79c6;">:= </span><span style="color:#50fa7b;">setupMsgServerCreatePost</span><span>(</span><span style="color:#ffffff;">t</span><span>)
+</span><span>	createResponse, err </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">msgServer</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">CreatePost</span><span>(</span><span style="color:#ffffff;">context</span><span>, </span><span style="color:#ff79c6;">&amp;</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">MsgCreatePost</span><span>{
+</span><span>		</span><span style="color:#ffffff;">Title</span><span>: </span><span style="color:#f1fa8c;">&quot;Test&quot;</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Body</span><span>:  </span><span style="color:#f1fa8c;">&quot;This is a test&quot;</span><span>,
+</span><span>	})
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Nil</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">err</span><span>)
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">EqualValues</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">MsgCreatePostResponse</span><span>{
+</span><span>		</span><span style="color:#ffffff;">PostIndex</span><span>: </span><span style="color:#f1fa8c;">&quot;0&quot;</span><span>,
+</span><span>	}, </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">createResponse</span><span>)
+</span><span>}
+</span></code></pre>
+<p>Run test:</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>cd x/blog/keeper &amp;&amp; go test
+</span></code></pre>
+<p>Let's get the chain up and running in your local environment.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>ignite chain serve -r
+</span></code></pre>
+<p>Sending <code>create-post</code> transaction by running following command:<br />
+You can refer to <code>blogd tx blog -h</code> for executable commands.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>blogd tx blog create-post &quot;Test&quot; &quot;This is a test&quot;  --from alice
+</span></code></pre>
+<p>Check if there is the blog post:
+You can refer to <code>blogd q blog -h</code> for executable commands.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>blogd q blog list-stored-post
+</span></code></pre>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>pagination:
+</span><span>  next_key: null
+</span><span>  total: &quot;0&quot;
+</span><span>storedPost:
+</span><span>- body: This is a test
+</span><span>  index: &quot;0&quot;
+</span><span>  title: Test
+</span></code></pre>
+<p>Congrats!</p>
+<h3 id="handle-errors">Handle Errors</h3>
+<p>Impliment validation <code>Title</code> and <code>Body</code> of the <code>CreatePost</code>.(<a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/commit/6df92a8c682fd199ec281be34f83339332de1f8d">Diffs</a>)<br />
+Define the errors.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/6df92a8c682fd199ec281be34f83339332de1f8d/x/blog/types/errors.go">x/blog/types/errors.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="font-style:italic;color:#8be9fd;">var </span><span>(
+</span><span>	ErrSample           </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">sdkerrors</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Register</span><span>(</span><span style="color:#ffffff;">ModuleName</span><span>, </span><span style="color:#bd93f9;">1100</span><span>, </span><span style="color:#f1fa8c;">&quot;sample error&quot;</span><span>)
+</span><span>	ErrMissingPostTitle </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">sdkerrors</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Register</span><span>(</span><span style="color:#ffffff;">ModuleName</span><span>, </span><span style="color:#bd93f9;">1101</span><span>, </span><span style="color:#f1fa8c;">&quot;title is missing&quot;</span><span>)
+</span><span>	ErrMissingPostBody  </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">sdkerrors</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Register</span><span>(</span><span style="color:#ffffff;">ModuleName</span><span>, </span><span style="color:#bd93f9;">1102</span><span>, </span><span style="color:#f1fa8c;">&quot;body is missing&quot;</span><span>)
+</span><span>)
+</span><span>
+</span></code></pre>
+<p>Create <code>x/blog/types/full_post.go</code> and implement <code>Validate()</code>.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/6df92a8c682fd199ec281be34f83339332de1f8d/x/blog/types/full_post.go">x/blog/types/full_post.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#ff79c6;">package </span><span style="color:#ffffff;">types
+</span><span>
+</span><span style="color:#ff79c6;">import </span><span style="color:#f1fa8c;">&quot;fmt&quot;
+</span><span>
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span>(</span><span style="font-style:italic;color:#ffb86c;">storedPost </span><span style="font-style:italic;color:#8be9fd;">StoredPost</span><span>) </span><span style="color:#50fa7b;">GetPostTitle</span><span>() (</span><span style="font-style:italic;color:#ffb86c;">title </span><span style="font-style:italic;color:#66d9ef;">string</span><span>, </span><span style="font-style:italic;color:#ffb86c;">err </span><span style="font-style:italic;color:#66d9ef;">error</span><span>) {
+</span><span>	</span><span style="color:#ff79c6;">if </span><span style="color:#8be9fd;">len</span><span>(</span><span style="color:#ffffff;">storedPost</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Title</span><span>) </span><span style="color:#ff79c6;">&lt;= </span><span style="color:#bd93f9;">0 </span><span>{
+</span><span>		</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">title</span><span>, </span><span style="color:#ffffff;">ErrMissingPostTitle</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Wrap</span><span>(</span><span style="color:#ffffff;">fmt</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Sprintf</span><span>(</span><span style="color:#f1fa8c;">&quot;index = </span><span style="color:#bd93f9;">%s</span><span style="color:#f1fa8c;">&quot;</span><span>, </span><span style="color:#ffffff;">storedPost</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Index</span><span>))
+</span><span>	}
+</span><span>	</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">title</span><span>, </span><span style="color:#bd93f9;">nil
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span>(</span><span style="font-style:italic;color:#ffb86c;">storedPost </span><span style="font-style:italic;color:#8be9fd;">StoredPost</span><span>) </span><span style="color:#50fa7b;">GetPostBody</span><span>() (</span><span style="font-style:italic;color:#ffb86c;">body </span><span style="font-style:italic;color:#66d9ef;">string</span><span>, </span><span style="font-style:italic;color:#ffb86c;">err </span><span style="font-style:italic;color:#66d9ef;">error</span><span>) {
+</span><span>	</span><span style="color:#ff79c6;">if </span><span style="color:#8be9fd;">len</span><span>(</span><span style="color:#ffffff;">storedPost</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Body</span><span>) </span><span style="color:#ff79c6;">&lt;= </span><span style="color:#bd93f9;">0 </span><span>{
+</span><span>		</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">body</span><span>, </span><span style="color:#ffffff;">ErrMissingPostBody</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Wrap</span><span>(</span><span style="color:#ffffff;">fmt</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Sprintf</span><span>(</span><span style="color:#f1fa8c;">&quot;index = </span><span style="color:#bd93f9;">%s</span><span style="color:#f1fa8c;">&quot;</span><span>, </span><span style="color:#ffffff;">storedPost</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Index</span><span>))
+</span><span>	}
+</span><span>	</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">body</span><span>, </span><span style="color:#bd93f9;">nil
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span>(</span><span style="font-style:italic;color:#ffb86c;">storedPost </span><span style="font-style:italic;color:#8be9fd;">StoredPost</span><span>) </span><span style="color:#50fa7b;">Validate</span><span>() (</span><span style="font-style:italic;color:#ffb86c;">err </span><span style="font-style:italic;color:#66d9ef;">error</span><span>) {
+</span><span>	</span><span style="color:#bd93f9;">_</span><span>, </span><span style="color:#ffffff;">err </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">storedPost</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">GetPostTitle</span><span>()
+</span><span>	</span><span style="color:#ff79c6;">if </span><span style="color:#ffffff;">err </span><span style="color:#ff79c6;">!= </span><span style="color:#bd93f9;">nil </span><span>{
+</span><span>		</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">err
+</span><span>	}
+</span><span>	</span><span style="color:#bd93f9;">_</span><span>, </span><span style="color:#ffffff;">err </span><span style="color:#ff79c6;">= </span><span style="color:#ffffff;">storedPost</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">GetPostBody</span><span>()
+</span><span>	</span><span style="color:#ff79c6;">if </span><span style="color:#ffffff;">err </span><span style="color:#ff79c6;">!= </span><span style="color:#bd93f9;">nil </span><span>{
+</span><span>		</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">err
+</span><span>	}
+</span><span>	</span><span style="color:#ff79c6;">return </span><span style="color:#ffffff;">err
+</span><span>}
+</span></code></pre>
+<p>Add validation before storing objects.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/6df92a8c682fd199ec281be34f83339332de1f8d/x/blog/keeper/msg_server_create_post.go">x/blog/keeper/msg_server_create_post.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span>err </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">storedPost</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Validate</span><span>()
+</span><span style="color:#ff79c6;">if </span><span style="color:#ffffff;">err </span><span style="color:#ff79c6;">!= </span><span style="color:#bd93f9;">nil </span><span>{
+</span><span>  </span><span style="color:#ff79c6;">return </span><span style="color:#bd93f9;">nil</span><span>, </span><span style="color:#ffffff;">err
+</span><span>}
+</span></code></pre>
+<p>Write some tests.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/6df92a8c682fd199ec281be34f83339332de1f8d/x/blog/keeper/msg_server_create_post_test.go">x/blog/keeper/msg_server_create_post_test.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">TestCreatePostBadTitle</span><span>(</span><span style="font-style:italic;color:#ffb86c;">t </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">testing</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">T</span><span>) {
+</span><span>	msgServer, </span><span style="color:#bd93f9;">_</span><span>, context </span><span style="color:#ff79c6;">:= </span><span style="color:#50fa7b;">setupMsgServerCreatePost</span><span>(</span><span style="color:#ffffff;">t</span><span>)
+</span><span>	createResponse, err </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">msgServer</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">CreatePost</span><span>(</span><span style="color:#ffffff;">context</span><span>, </span><span style="color:#ff79c6;">&amp;</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">MsgCreatePost</span><span>{
+</span><span>		</span><span style="color:#ffffff;">Title</span><span>: </span><span style="color:#f1fa8c;">&quot;&quot;</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Body</span><span>:  </span><span style="color:#f1fa8c;">&quot;This is a test&quot;</span><span>,
+</span><span>	})
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Nil</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">createResponse</span><span>)
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">EqualError</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">err</span><span>, </span><span style="color:#f1fa8c;">&quot;index = 0: title is missing&quot;</span><span>)
+</span><span>}
+</span><span>
+</span><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">TestCreatePostBadBody</span><span>(</span><span style="font-style:italic;color:#ffb86c;">t </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">testing</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">T</span><span>) {
+</span><span>	msgServer, </span><span style="color:#bd93f9;">_</span><span>, context </span><span style="color:#ff79c6;">:= </span><span style="color:#50fa7b;">setupMsgServerCreatePost</span><span>(</span><span style="color:#ffffff;">t</span><span>)
+</span><span>	createResponse, err </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">msgServer</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">CreatePost</span><span>(</span><span style="color:#ffffff;">context</span><span>, </span><span style="color:#ff79c6;">&amp;</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">MsgCreatePost</span><span>{
+</span><span>		</span><span style="color:#ffffff;">Title</span><span>: </span><span style="color:#f1fa8c;">&quot;Test&quot;</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Body</span><span>:  </span><span style="color:#f1fa8c;">&quot;&quot;</span><span>,
+</span><span>	})
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Nil</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">createResponse</span><span>)
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">EqualError</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">err</span><span>, </span><span style="color:#f1fa8c;">&quot;index = 0: body is missing&quot;</span><span>)
+</span><span>}
+</span></code></pre>
+<p>Run test.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>cd x/blog/keeper &amp;&amp; go test
+</span></code></pre>
+<h3 id="handle-events">Handle Events</h3>
+<p>By emitting an event, it is possible to log the event information in the transaction.
+(<a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/commit/03df1c10a8b4425c431f8dbe36248c20c61d923c">Diffs</a>)
+Let's define <code>new-post-created</code> event.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/03df1c10a8b4425c431f8dbe36248c20c61d923c/x/blog/types/keys.go">x/blog/types/keys.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#6272a4;">// CreatePost Events
+</span><span style="font-style:italic;color:#8be9fd;">const </span><span>(
+</span><span>	</span><span style="color:#ffffff;">PostCreatedEventType </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;new-post-created&quot;
+</span><span>	</span><span style="color:#ffffff;">PostCreatedCreator   </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;creator&quot;
+</span><span>	</span><span style="color:#ffffff;">PostCreatedPostIndex </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;post-index&quot;
+</span><span>	</span><span style="color:#ffffff;">PostCreatedTitle     </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;title&quot;
+</span><span>	</span><span style="color:#ffffff;">PostCreatedBody      </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;body&quot;
+</span><span>)
+</span></code></pre>
+<p>Emit event after storing objects.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/03df1c10a8b4425c431f8dbe36248c20c61d923c/x/blog/keeper/msg_server_create_post.go">x/blog/keeper/msg_server_create_post.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#ffffff;">ctx</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">EventManager</span><span>()</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">EmitEvent</span><span>(
+</span><span>		</span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">NewEvent</span><span>(</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">PostCreatedEventType</span><span>,
+</span><span>			</span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">NewAttribute</span><span>(</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">PostCreatedCreator</span><span>, </span><span style="color:#ffffff;">msg</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Creator</span><span>),
+</span><span>			</span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">NewAttribute</span><span>(</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">PostCreatedPostIndex</span><span>, </span><span style="color:#ffffff;">newIndex</span><span>),
+</span><span>			</span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">NewAttribute</span><span>(</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">PostCreatedTitle</span><span>, </span><span style="color:#ffffff;">msg</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Title</span><span>),
+</span><span>			</span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">NewAttribute</span><span>(</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">PostCreatedBody</span><span>, </span><span style="color:#ffffff;">msg</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Body</span><span>),
+</span><span>		),
+</span><span>	)
+</span></code></pre>
+<p>Write a test.</p>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/03df1c10a8b4425c431f8dbe36248c20c61d923c/testutil/constants.go">testutil/constants.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="color:#ff79c6;">package </span><span style="color:#ffffff;">testutil
+</span><span>
+</span><span style="font-style:italic;color:#8be9fd;">const </span><span>(
+</span><span>	</span><span style="color:#ffffff;">Alice </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;cosmos1jmjfq0tplp9tmx4v9uemw72y4d2wa5nr3xn9d3&quot;
+</span><span>	</span><span style="color:#ffffff;">Bob   </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;cosmos1xyxs3skf3f4jfqeuv89yyaqvjc6lffavxqhc8g&quot;
+</span><span>	</span><span style="color:#ffffff;">Carol </span><span style="color:#ff79c6;">= </span><span style="color:#f1fa8c;">&quot;cosmos1e0w5t53nrq7p66fye6c8p0ynyhf6y24l4yuxd7&quot;
+</span><span>)
+</span></code></pre>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/taryune/cosmos-sdk-tutorial-blog/blob/03df1c10a8b4425c431f8dbe36248c20c61d923c/x/blog/keeper/msg_server_create_post_test.go">x/blog/keeper/msg_server_create_post_test.go</a></li>
+</ul>
+<pre data-lang="go" style="background-color:#282a36;color:#f8f8f2;" class="language-go "><code class="language-go" data-lang="go"><span style="font-style:italic;color:#8be9fd;">func </span><span style="color:#50fa7b;">TestCreatePostEmitted</span><span>(</span><span style="font-style:italic;color:#ffb86c;">t </span><span style="color:#ff79c6;">*</span><span style="color:#ffffff;">testing</span><span style="color:#ff79c6;">.</span><span style="font-style:italic;color:#8be9fd;">T</span><span>) {
+</span><span>	msgServer, </span><span style="color:#bd93f9;">_</span><span>, context </span><span style="color:#ff79c6;">:= </span><span style="color:#50fa7b;">setupMsgServerCreatePost</span><span>(</span><span style="color:#ffffff;">t</span><span>)
+</span><span>	</span><span style="color:#bd93f9;">_</span><span>, err </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">msgServer</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">CreatePost</span><span>(</span><span style="color:#ffffff;">context</span><span>, </span><span style="color:#ff79c6;">&amp;</span><span style="color:#ffffff;">types</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">MsgCreatePost</span><span>{
+</span><span>		</span><span style="color:#ffffff;">Creator</span><span>: </span><span style="color:#ffffff;">testutil</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Alice</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Title</span><span>:   </span><span style="color:#f1fa8c;">&quot;Test&quot;</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Body</span><span>:    </span><span style="color:#f1fa8c;">&quot;This is a test&quot;</span><span>,
+</span><span>	})
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Nil</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">err</span><span>)
+</span><span>
+</span><span>	ctx </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">UnwrapSDKContext</span><span>(</span><span style="color:#ffffff;">context</span><span>)
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">NotNil</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">ctx</span><span>)
+</span><span>	events </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">StringifyEvents</span><span>(</span><span style="color:#ffffff;">ctx</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">EventManager</span><span>()</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">ABCIEvents</span><span>())
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">Len</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">events</span><span>, </span><span style="color:#bd93f9;">1</span><span>)
+</span><span>	event </span><span style="color:#ff79c6;">:= </span><span style="color:#ffffff;">events</span><span>[</span><span style="color:#bd93f9;">0</span><span>]
+</span><span>	</span><span style="color:#ffffff;">require</span><span style="color:#ff79c6;">.</span><span style="color:#50fa7b;">EqualValues</span><span>(</span><span style="color:#ffffff;">t</span><span>, </span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">StringEvent</span><span>{
+</span><span>		</span><span style="color:#ffffff;">Type</span><span>: </span><span style="color:#f1fa8c;">&quot;new-post-created&quot;</span><span>,
+</span><span>		</span><span style="color:#ffffff;">Attributes</span><span>: []</span><span style="color:#ffffff;">sdk</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Attribute</span><span>{
+</span><span>			{</span><span style="color:#ffffff;">Key</span><span>: </span><span style="color:#f1fa8c;">&quot;creator&quot;</span><span>, </span><span style="color:#ffffff;">Value</span><span>: </span><span style="color:#ffffff;">testutil</span><span style="color:#ff79c6;">.</span><span style="color:#ffffff;">Alice</span><span>},
+</span><span>			{</span><span style="color:#ffffff;">Key</span><span>: </span><span style="color:#f1fa8c;">&quot;post-index&quot;</span><span>, </span><span style="color:#ffffff;">Value</span><span>: </span><span style="color:#f1fa8c;">&quot;0&quot;</span><span>},
+</span><span>			{</span><span style="color:#ffffff;">Key</span><span>: </span><span style="color:#f1fa8c;">&quot;title&quot;</span><span>, </span><span style="color:#ffffff;">Value</span><span>: </span><span style="color:#f1fa8c;">&quot;Test&quot;</span><span>},
+</span><span>			{</span><span style="color:#ffffff;">Key</span><span>: </span><span style="color:#f1fa8c;">&quot;body&quot;</span><span>, </span><span style="color:#ffffff;">Value</span><span>: </span><span style="color:#f1fa8c;">&quot;This is a test&quot;</span><span>},
+</span><span>		},
+</span><span>	}, </span><span style="color:#ffffff;">event</span><span>)
+</span><span>}
+</span><span>
+</span></code></pre>
+<p>Check if the event is emitted.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>blogd tx blog create-post &quot;Test&quot; &quot;This is a test&quot;  --from alice
+</span></code></pre>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>...
+</span><span>txhash: FB80FE1BF5A3FA7CBA588F9A7A064B72A1B29CFC0D8B16AB52180BFE19119CF9
+</span></code></pre>
+<p>Query <code>txhash</code>.</p>
+<pre data-lang="console" style="background-color:#282a36;color:#f8f8f2;" class="language-console "><code class="language-console" data-lang="console"><span>blogd q tx FB80FE1BF5A3FA7CBA588F9A7A064B72A1B29CFC0D8B16AB52180BFE19119CF9 --output json | jq
+</span></code></pre>
+<p><code>new-post-created</code> was emitted!</p>
+<pre data-lang="json" style="background-color:#282a36;color:#f8f8f2;" class="language-json "><code class="language-json" data-lang="json"><span>...
+</span><span>  </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">logs</span><span style="color:#eeeeee;">&quot;</span><span>: [
+</span><span>    {
+</span><span>      </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">msg_index</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#bd93f9;">0</span><span>,
+</span><span>      </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">log</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;&quot;</span><span>,
+</span><span>      </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">events</span><span style="color:#eeeeee;">&quot;</span><span>: [
+</span><span>        {
+</span><span>          </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">type</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">message</span><span style="color:#eeeeee;">&quot;</span><span>,
+</span><span>          </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">attributes</span><span style="color:#eeeeee;">&quot;</span><span>: [
+</span><span>            {
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">key</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">action</span><span style="color:#eeeeee;">&quot;</span><span>,
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">value</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">/blog.blog.MsgCreatePost</span><span style="color:#eeeeee;">&quot;
+</span><span>            }
+</span><span>          ]
+</span><span>        },
+</span><span>        {
+</span><span>          </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">type</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">new-post-created</span><span style="color:#eeeeee;">&quot;</span><span>,
+</span><span>          </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">attributes</span><span style="color:#eeeeee;">&quot;</span><span>: [
+</span><span>            {
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">key</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">creator</span><span style="color:#eeeeee;">&quot;</span><span>,
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">value</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">cosmos1yf2aal544uf8n0ruecl3ytx066glfjjphskhdh</span><span style="color:#eeeeee;">&quot;
+</span><span>            },
+</span><span>            {
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">key</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">post-index</span><span style="color:#eeeeee;">&quot;</span><span>,
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">value</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">1</span><span style="color:#eeeeee;">&quot;
+</span><span>            },
+</span><span>            {
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">key</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">title</span><span style="color:#eeeeee;">&quot;</span><span>,
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">value</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">Test</span><span style="color:#eeeeee;">&quot;
+</span><span>            },
+</span><span>            {
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">key</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">body</span><span style="color:#eeeeee;">&quot;</span><span>,
+</span><span>              </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">value</span><span style="color:#eeeeee;">&quot;</span><span>: </span><span style="color:#eeeeee;">&quot;</span><span style="color:#f1fa8c;">This is a test</span><span style="color:#eeeeee;">&quot;
+</span><span>            }
+</span><span>          ]
+</span><span>        }
+</span><span>      ]
+</span><span>    }
+</span><span>  ],
+</span><span>...
+</span></code></pre>
+<h2 id="references">References</h2>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://docs.cosmos.network/main">Cosmos SDK Document</a></li>
+<li><a rel="noopener" target="_blank" href="https://tutorials.cosmos.network/">Cosmos SDK - Developer Portal</a></li>
+<li><a rel="noopener" target="_blank" href="https://docs.ignite.com/">Ignite CLI | Ignite Cli Docs</a></li>
+</ul>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                
+                
+                    
+                    Tagged
+                    
+                        <a href="https://taryu.net/tags/cosmossdk/">CosmosSDK</a>
+                        
+                            
+                                
+                                    and
+                                
+                            
+                        
+                    
+                        <a href="https://taryu.net/tags/ignitecli/">IgniteCLI</a>
+                        
+                            
+                        
+                    
+                
+            </p>
+            
+            
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>
