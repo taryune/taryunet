@@ -1,6 +1,6 @@
 +++
 title = "Cosmos SDK Introduction and First Step for Building Your Own Blockchain"
-date = 2023-01-01
+date = 2023-01-10
 [taxonomies]
 tags = ["CosmosSDK", "IgniteCLI"]
 +++
@@ -71,7 +71,7 @@ Blogを作成するシンプルなチュートリアルとなっています。
 ```console
 curl https://get.ignite.com/cli! | bash
 ```
-MacOSXの場合は別途Permissionが必要なため以下の手順でインストールします。
+macOSの場合は別途Permissionが必要なため以下の手順でインストールします。
 ```console
 sudo curl https://get.ignite.com/cli! | sudo bash
 ```
@@ -126,7 +126,7 @@ blog
 |  readme.md
 ```
 
-### Create Stores
+### Store Object
 Blogの情報を保存する以下のようなStoreを作成します。
 
 `PostCount`: ブログの記事数のCounter, `uint64`  
@@ -150,7 +150,7 @@ ignite scaffold single postCount count:uint \
 `no-message`のフラグを省略すると、`PostCount` Objectを上書きするサービスも作成されていまします。
 今回はアプリケーション内でコードを記述し制御したいため追加する必用があります。
 また、`ignite scaffold` では`field`のdefault typeはstringとなっているため`:int`で整数型を宣言します。
-`ignite scaffold`についてのドキュメントは[こちら](https://docs.ignite.com/cli#ignite-scaffold)です。
+`ignite scaffold single`についてのドキュメントは[こちら](https://docs.ignite.com/cli#ignite-scaffold-single)です。
 
 **StoredPost**
 ```proto
@@ -168,6 +168,7 @@ ignite scaffold map storedPost title body \
   --module blog  \
   --no-message
 ```
+`ignite scaffold map`についてのドキュメントは[こちら](https://docs.ignite.com/cli#ignite-scaffold-map)です。
 
 次に`PostCount`のGenesis valueを設定します。
 デフォルトでは、`PostCount`が`nullable`に設定されているので修正します。
@@ -434,7 +435,7 @@ cd x/blog/keeper && go test
 差分は[こちら](https://github.com/taryune/cosmos-sdk-tutorial-blog/commit/6df92a8c682fd199ec281be34f83339332de1f8d)
 
 ### Handle Events
-Eventを発火させることで、Transactoin logにEvent情報を残すことが可能です。
+Eventを発火させることで、Transaction logにEvent情報を残すことが可能です。
 実際に`new-post-created`というEventを発火させてログを確認していきます。
 
 Eventを定義します。
