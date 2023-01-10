@@ -1,5 +1,10 @@
 {% macro meta(page) %}
     {% if page.date %}Published: {{ page.date | date(format="%F") }}{% endif %}
+    <a class="twitter-share-button"
+       href="https://twitter.com/intent/tweet?text={{ page.title }}%0D%0A{{ page.permalink }}"
+  data-size="large" target="_blank">
+        Tweet
+    </a>
 {% endmacro meta %}
 
 {% macro page_in_list(page) %}
