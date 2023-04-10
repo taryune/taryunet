@@ -9,7 +9,7 @@ Co-Founder of
 [Arshub Inc.](https://arshub.io/),
 [MonoBundle, Inc.](https://monobundle.com/),
 and
-[Slider Netwrok](http://slider.network/).  
+[mycel](https://mycel.domains/).
 Interested in -  
 Computer Architecture, Blockchain Development, Embedded Systems, VFX, Sound, and All rave music.
 
