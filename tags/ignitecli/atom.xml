@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>taryu.net - IgniteCLI</title>
+    <link href="https://taryu.net/tags/ignitecli/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://taryu.net"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2023-01-10T00:00:00+00:00</updated>
+    <id>https://taryu.net/tags/ignitecli/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Cosmos SDK Introduction and First Step for Building Your Own Blockchain</title>
+        <published>2023-01-10T00:00:00+00:00</published>
+        <updated>2023-01-10T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://taryu.net/cosmos-sdk-introduction/" type="text/html"/>
+        <id>https://taryu.net/cosmos-sdk-introduction/</id>
+        
+        <summary type="html">&lt;h2 id=&quot;tl-dr&quot;&gt;TL;DR&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Cosmos SDK Overview
+&lt;ul&gt;
+&lt;li&gt;Application-specific Blockchain&lt;&#x2F;li&gt;
+&lt;li&gt;Inter-blockchain Communication Protocol&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;Building the blockchain with Ignite CLI
+&lt;ul&gt;
+&lt;li&gt;Installing Ignite CLI&lt;&#x2F;li&gt;
+&lt;li&gt;Store Object&lt;&#x2F;li&gt;
+&lt;li&gt;Create a Message&lt;&#x2F;li&gt;
+&lt;li&gt;Error Handling&lt;&#x2F;li&gt;
+&lt;li&gt;Event Handling&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</summary>
+        
+    </entry>
+</feed>
