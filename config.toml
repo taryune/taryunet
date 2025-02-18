@@ -10,7 +10,7 @@ build_search_index = false
 
 title = "taryu.net"
 description = ""
-generate_feed = true
+# generate_feed = true
 taxonomies = [
     {name = "tags", feed = true},
 ]
@@ -18,7 +18,7 @@ taxonomies = [
 [languages.ja]
 title = "taryu.net"
 description = ""
-generate_feed = true
+# generate_feed = true
 taxonomies = [
     {name = "tags", feed = true},
 ]
