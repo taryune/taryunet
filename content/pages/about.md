@@ -3,7 +3,7 @@ title = "About"
 path = "about"
 +++
 ## taryune
-A Non ideologist.
+Ideological Agnosticism
 
 ## Links
 - [X](https://twitter.com/rumitoast)
