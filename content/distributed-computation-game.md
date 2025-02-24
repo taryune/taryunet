@@ -18,7 +18,7 @@ The key architectures we analyze are:
 
 - **Actor-Based Systems (ABS)** such as [AO](https://ao.arweave.dev/), which leverage message-passing between isolated processes with no shared state. ABSs excel at concurrency and fault isolation but present challenges for global state verification.
 
-- **Canister-Based Systems (CBS)** like the [Internet Computer](https://internetcomputer.org/), which execute WebAssembly modules in isolated containers with orthogonal persistence. CBSs provide powerful stateful computation capabilities with subnet-based scalability but face cross-subnet coordination complexities.
+- **Caanister-Based Machines (CBM)** like the [Internet Computer](https://internetcomputer.org/), which execute WebAssembly modules in isolated containers with orthogonal persistence. CBMs provide powerful stateful computation capabilities with subnet-based scalability but face cross-subnet coordination complexities.
 
 These architectures represent fundamentally different approaches to solving the distributed computation problem, each with distinct trade-offs in their consistency models, state management approaches, and programming paradigms. By examining these systems through a comparative lens, we identify their respective optimal use cases and analyze how their underlying design principles address fundamental distributed systems challenges.
 
