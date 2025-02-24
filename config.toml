@@ -1,6 +1,5 @@
 # The URL the site will be built for
 base_url = "https://taryu.net"
-default_language = "en"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -10,15 +9,6 @@ build_search_index = false
 
 title = "taryu.net"
 description = ""
-# generate_feed = true
-taxonomies = [
-    {name = "tags", feed = true},
-]
-
-[languages.ja]
-title = "taryu.net"
-description = ""
-# generate_feed = true
 taxonomies = [
     {name = "tags", feed = true},
 ]

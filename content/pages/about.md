@@ -3,7 +3,7 @@ title = "About"
 path = "about"
 +++
 ## taryune
-Ideological Agnosticism
+Plastic namako.
 
 ## Links
 - [X](https://twitter.com/rumitoast)
