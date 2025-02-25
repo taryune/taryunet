@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>taryu.net - Distributed System</title>
+    <link rel="self" type="application/atom+xml" href="https://taryu.net/tags/distributed-system/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://taryu.net"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2024-02-24T00:00:00+00:00</updated>
+    <id>https://taryu.net/tags/distributed-system/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Distrubuted Computation Game: A Comparative Analysis of Distributed System Architectures</title>
+        <published>2024-02-24T00:00:00+00:00</published>
+        <updated>2024-02-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://taryu.net/distributed-computation-game/"/>
+        <id>https://taryu.net/distributed-computation-game/</id>
+        
+        <summary type="html">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;&#x2F;h2&gt;
+&lt;p&gt;Distributed computation systems have evolved from simple consensus mechanisms to sophisticated architectures supporting diverse computational paradigms. As distributed applications proliferate across domains ranging from finance to supply chain management, the architectural choices underpinning these systems significantly impact their scalability, security, programmability, and performance characteristics. This paper presents a structured comparative analysis of four major architectural approaches to distributed computation, examining their underlying models, transition mechanisms, and fundamental properties.&lt;&#x2F;p&gt;</summary>
+        
+    </entry>
+</feed>
